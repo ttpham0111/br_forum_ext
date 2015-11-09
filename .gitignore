@@ -3,7 +3,7 @@
 
 #Except...
 !.gitignore
-!basic_blue_pink
-!boardannouncements/styles/basic_blue_pink
-!dmzx/styles/basic_blue_pink
-!projects
+!/basic_blue_pink/
+!/boardannouncements/styles/basic_blue_pink/
+!/dmzx/styles/basic_blue_pink/
+!/projects/
