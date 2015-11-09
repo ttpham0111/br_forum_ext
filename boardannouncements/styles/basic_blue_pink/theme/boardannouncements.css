@@ -1,0 +1,81 @@
+/**~*~*
+  Board Annouceements Extension
+  Style Basic Blue Pink
+  Edited By Tuan Pham
+*~**/
+
+/* style the announcement banner */
+#phpbb_announcement {
+  margin: 10px 0;
+  font-size: 1.1em;
+  padding: 10px;
+  border-radius: 0;
+  background-color: #FFF4F9; /* default color */
+}
+
+/* zero out any text margins and scroll any overflow */
+#phpbb_announcement div {
+  margin: 0;
+  overflow-x: auto;
+  overflow: hidden;
+  font-size: 1.1em;
+  line-height: 1.5em;
+}
+
+/* style the close button */
+#phpbb_announcement .close {
+  float: right;
+}
+#phpbb_announcement .close:before {
+  content: "\f057";
+  background: transparent !important;
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+  font-family: FontAwesome;
+  font-size: 1.2em;
+  text-align: center;
+  text-decoration: none !important;
+  outline-style: none !important;
+  color: inherit;
+  transition: opacity 0.3s ease;
+  opacity: .5;
+}
+#phpbb_announcement .close:hover {
+  color: #000;
+}
+/* reposition close button for right to left languages */
+.rtl #phpbb_announcement .close {
+  float: left;
+  margin: 0 4px 0 0;
+}
+
+/* hide close button on desktops by default */
+.notouch #phpbb_announcement .close {
+  opacity: 0;
+  transition: opacity .5s;
+}
+
+/* display the close button on mouse-over of the banner */
+.notouch #phpbb_announcement:hover .close {
+  opacity: 0.6;
+}
+
+/* fix for lists, force them to display inside containing div */
+#phpbb_announcement ul, #phpbb_announcement ol {
+  margin-left: 20px;
+}
+
+.rtl #phpbb_announcement ul, .rtl #phpbb_announcement ol {
+  margin-left: 0;
+  margin-right: 20px;
+}
+
+/* clear floats */
+.clearfix:after {
+  content: '.';
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}

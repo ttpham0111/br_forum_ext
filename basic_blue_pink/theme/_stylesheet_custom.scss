@@ -1,0 +1,235 @@
+/**~*~*
+	Custom CSS for Basic_Blue_Pink
+	Edited by Tuan Pham
+*~**/
+
+/**~*~*
+	Remove underlines.
+*~**/
+a:hover {
+	text-decoration: none;
+}
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+  text-decoration: none;
+}
+a.forumtitle:hover, a.topictitle:hover {
+  text-decoration: none;
+}
+a.lastsubject:hover {
+  text-decoration: none;
+}
+.postprofile a:hover, .postprofile dt.author a:hover {
+  text-decoration: none;
+}
+.search .postprofile a:hover {
+  text-decoration: none;
+}
+/**~*~*~**/
+
+/**~*~*
+	Change colors from red to pink.
+*~**/
+.pagination li a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
+  border-color: #fa00a8;
+  background-color: #fa00a8;
+}
+.pagination li.page-jump a:hover:after {
+  color: #fa00a8;
+}
+.error {
+  color: #fa00a8;
+}
+a.feed-icon-forum:hover:after {
+  color: #fa00a8;
+}
+a.subforum.unread {
+  color: #fa00a8;
+}
+.forabg ul.topiclist li.header a:hover, .forumbg ul.topiclist li.header a:hover {
+  color: #fa00a8;
+}
+.pollbar5 {
+  background-color: #fa00a8;
+}
+.button.report-icon, .post-buttons > #expand > a.report-icon, .button.delete-icon, .post-buttons > #expand > a.delete-icon {
+  border-color: #fa00a8;
+  background-color: #fa00a8;
+}
+.post-buttons > #expand > a:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
+  border-color: #fa00a8 !important;
+  background-color: #fa00a8;
+}
+.icon-notification.non-zero:after, .icon-pm.non-zero:after {
+  color: #fa00a8;
+}
+#format-buttons input.button1:focus, #format-buttons input.button2:focus, #format-buttons input.button3:focus {
+  border-color: #fa00a8;
+  background-color: #fa00a8;
+}
+.phpbb_alert .alert_close:hover:before {
+  color: #fa00a8;
+}
+ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist li.responsive-menu.visible a.responsive-menu-link:before {
+  color: #fa00a8;
+}
+.notification_list li.notification-reported strong, .notification_list li.notification-disapproved strong {
+  color: #fa00a8;
+}
+.imageset.icon_topic_newest:after, .imageset.icon_topic_reported:after, .imageset.icon_topic_deleted:after, .imageset.icon_topic_unapproved:after {
+  color: #fa00a8;
+}
+input.button1:focus, input.button2:focus, input.button3:focus {
+  color: #fa00a8;
+}
+.notification_list li.dropdown-notification:hover {
+  color: #fa00a8;
+}
+/**~*~*~**/
+
+/**~*~*
+	Set all hovers to blue.
+*~**/
+h3 a:hover {
+  color: #4cdcff;
+}
+a:hover {
+  color: #4cdcff;
+}
+a.time:hover {
+  color: #4cdcff;
+}
+a.top:hover, a.top2:hover {
+  color: #4cdcff;
+}
+.panel > .inner > h3:first-child a:hover,
+.panel > h3:first-child a:hover {
+  color: #4cdcff;
+}
+table.table1 tbody tr:hover, table.table1 tbody tr.hover {
+  color: #4cdcff;
+}
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+  color: #4cdcff;
+}
+#minitabs .activetab > a,
+#minitabs .activetab > a:hover {
+  color: #4cdcff;
+}
+.dropdown-extended ul li:hover {
+  color: #4cdcff;
+}
+.dropdown-extended .header a:hover {
+  color: #4cdcff;
+}
+.notification_list li.dropdown-notification a.mark_read:hover, .notification_list li.dropdown-notification a.mark_read:after:hover {
+  color: #4cdcff;
+}
+.notification_list li.bg3 a.mark_read:hover, .notification_list li.bg3 a.mark_read:after:hover {
+  color: #4cdcff;
+}
+.notification_list li.dropdown-notification:hover a.mark_read:hover, .notification_list li.dropdown-notification:hover a.mark_read:after:hover {
+  color: #4cdcff;
+}
+.icon-bump:hover:after, .icon-contact:hover:after, .icon-delete-cookies:hover:after, .icon-download:hover:after, .icon-logout:hover:after, .icon-login:hover:after, .icon-mcp:hover:after, .icon-members:hover:after, .icon-members:hover:before, ul.linklist.bulletin > li.small-icon.icon-members:hover:before, .icon-notification:hover:after, .icon-pages:hover:after, .icon-pm:hover:after, .icon-print:hover:after, .icon-profile:hover:after, .icon-register:hover:after, .icon-sendemail:hover:after, .icon-subscribe:hover:after, .icon-team:hover:after, .icon-team:hover:before, ul.linklist.bulletin > li.small-icon.icon-team:hover:before, .icon-unsubscribe:hover:after, .icon-time:hover:after, .icon-thanks_toplist:hover:after, .icon-search-new:hover:after, .icon-search-unanswered:hover:after, .icon-search-unread:hover:after, .icon-search-self:hover:after, .icon-search:hover:after, .responsive-search a:hover:after, .icon-search-active:hover:after, .icon-search-advanced:hover:after, .icon-acp:hover:after, .icon-bookmark:hover:after, .icon-faq:hover:after, .icon-home:hover:after, .icon-mark:hover:after, .icon-ucp:hover:after, .icon-new-posts:hover:after, .icon-forums:hover:after, .icon-chat:hover:after, .icon-thanks:hover:after {
+  color: #4cdcff;
+}
+.dropdown-visible .dropdown-select, .dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select,
+.buttons > .button:hover,
+.post-buttons > #expand.buttons > a:hover,
+.button:hover,
+.post-buttons > #expand > a:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
+  border-color: #4cdcff !important;
+  background-color: #4cdcff;
+}
+.panel-container .panel > .inner > h3:first-child a:hover {
+  color: #4cdcff;
+}
+a.button1:hover, #format-buttons a.button1:hover, input.button1:hover, #format-buttons input.button1:hover, a.button2:hover, #format-buttons a.button2:hover, input.button2:hover, #format-buttons input.button2:hover, input.button3:hover, #format-buttons input.button3:hover {
+  border-color: #4cdcff;
+  background-color: #4cdcff
+}
+#navigation a:hover {
+  color: #4cdcff;
+}
+#tabs .tab > a:hover {
+  color: #4cdcff;
+}
+#tabs .activetab > a,
+#tabs .activetab > a:hover {
+  color: #4cdcff;
+}
+.navbar.tabbed.not-static + .navbar.secondary > ul > li:hover, .navbar.tabbed.not-static + .navbar.secondary > ul > li:hover:after, .navbar.tabbed.not-static + .navbar.secondary > ul > li:hover:before, .navbar.tabbed.not-static + .navbar.secondary > ul > li.dropdown-visible, .navbar.tabbed.not-static + .navbar.secondary > ul > li.dropdown-visible:after, .navbar.tabbed.not-static + .navbar.secondary > ul > li.dropdown-visible:before {
+  color: #4cdcff;
+}
+.navbar .nav-tabs .tab:hover, .navbar .nav-tabs .tab.dropdown-visible {
+  color: #4cdcff;
+}
+.navbar .nav-tabs {
+  background-color: #4cdcff;
+}
+.navbar.tabbed.not-static .nav-tabs li.tab:hover {
+  color: #4cdcff;
+}
+.navbar.secondary > ul > li.dropdown-visible:before {
+  color: #4cdcff;
+}
+.navbar.tabbed.not-static + .navbar.secondary > ul > li.dropdown-visible:before {
+  color: #4cdcff;
+}
+.icon-link + .list-inner > a.forumtitle, .icon-link + .list-inner > a.topictitle, .pm_unread .topictitle, a.subforum.unread {
+  color: #4cdcff;
+}
+.icon-search-new:after, .icon-search-unanswered:after, .icon-search-unread:after {
+  color: #4cdcff;
+}
+/**~*~*~**/
+
+body {
+  background-image: url("./images/backs.gif");
+}
+
+#wrap + #page-footer {
+  margin-top: 0;
+}
+
+.forabg ul.topiclist li.header, .forumbg ul.topiclist li.header {
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #a4a4a4;
+  background-color: #C7D0D7;
+  background-image: url('./images/cellpic1.png');
+  text-indent: 4px;
+}
+
+.forabg ul.topiclist li.header a, .forumbg ul.topiclist li.header a {
+  color: #a4a4a4;
+}
+
+.forabg + .forabg {
+  margin-top: 0;
+}
+
+.forabg {
+  background: #fafafa;
+  border: 0;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.page-width {
+	padding: 0 20px;
+	width: 1000px;
+	min-width: 1000px;
+	margin: 0 auto;
+	background-color: #fff;
+}
+
+.navbar.tabbed.not-static + .navbar.secondary {
+	margin: 0 0;
+}
+
+dl.icon {
+  background-position: 0;
+}

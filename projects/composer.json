@@ -1,0 +1,27 @@
+{
+   "name": "ttpham/projects",
+   "type": "phpbb-extension",
+   "description": "Project Table extension written for breaking-records.com",
+   "homepage": "https://github.com/tuan91187dsf/br_forum_ext/projects",
+   "version": "1.0.0",
+   "time": "2015-10-12",
+   "license": "GPL-2.0",
+   "authors": [
+      {
+         "name": "Tuan Pham",
+         "email": "tt.pham1991+git@gmail.com",
+         "homepage": "https://github.com/tuan91187dsf/",
+         "role": "Lead Developer"
+      }
+   ],
+   "require": {
+      "php": ">=5.3.3",
+      "composer/installers": "~1.0"
+   },
+   "extra": {
+      "display-name": "Project Table",
+      "soft-require" : {
+         "phpbb/phpbb": ">=3.1.0-RC2,<3.2.*@dev"
+      }
+   }
+}

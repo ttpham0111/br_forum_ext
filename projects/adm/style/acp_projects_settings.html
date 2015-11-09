@@ -1,0 +1,61 @@
+<!-- INCLUDE overall_header.html -->
+
+<h1>{L_PRJ_SETTINGS}</h1>
+
+<form id="acp_board" method="post" action="{U_ACTION}">
+  <fieldset>
+    <dl>
+      <dt>
+        <label for="{PRJ_CONFIG}display_above_forumbody">{L_PRJ_DISPLAY_ABOVE_FORUMBODY}{L_COLON}</label><br />
+        <span>{L_PRJ_DISPLAY_ABOVE_FORUMBODY_EXP}</span>
+      </dt>
+      <dd>
+        <label>
+          <input type="radio" class="radio" name="{PRJ_CONFIG}display_above_forumbody" value="1"<!-- IF PRJ_DISPLAY_ABOVE_FORUMBODY -->checked="checked"<!-- ENDIF --> /> {L_YES}
+        </label>
+        <label>
+          <input type="radio" class="radio" name="{PRJ_CONFIG}display_above_forumbody" value="0"<!-- IF not PRJ_DISPLAY_ABOVE_FORUMBODY -->checked="checked"<!-- ENDIF --> /> {L_NO}
+        </label>
+      </dd>
+    </dl>
+  </fieldset>
+  <fieldset>
+    <dl>
+      <dt>
+        <label for="{PRJ_CONFIG}releases_forum_id">{L_PRJ_RELEASES_FORUM_ID}{L_COLON}</label><br /><span>{L_PRJ_RELEASES_FORUM_ID_EXP}</span>
+      </dt>
+      <dd><input type="number" id="{PRJ_CONFIG}releases_forum_id" size="3" min="0" max="999" value="{PRJ_RELEASES_FORUM_ID}" /></dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="{PRJ_CONFIG}number_of_releases_to_display">{L_PRJ_NUMBER_OF_RELEASES_TO_DISPLAY}{L_COLON}</label><br />
+        <span>{L_PRJ_NUMBER_OF_RELEASES_TO_DISPLAY_EXP}</span>
+      </dt>
+      <dd><input type="number" id="{PRJ_CONFIG}number_of_releases_to_display" size="3" min="0" max="999" value="{PRJ_NUMBER_OF_RELEASES_TO_DISPLAY}" /></dd>
+    </dl>
+  </fieldset>
+  <fieldset>
+    <dl>
+      <dt>
+        <label for="{PRJ_CONFIG}project_forum_ids">{L_PRJ_PROJECT_FORUM_IDS}{L_COLON}</label><br /><span>{L_PRJ_PROJECT_FORUM_IDS_EXP}</span>
+      </dt>
+      <dd><input type="text" id="{PRJ_CONFIG}project_forum_ids" value="{PRJ_PROJECT_FORUM_IDS}" /></dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="{PRJ_CONFIG}number_of_projects_to_display">{L_PRJ_NUMBER_OF_PROJECTS_TO_DISPLAY}{L_COLON}</label><br />
+        <span>{L_PRJ_NUMBER_OF_PROJECTS_TO_DISPLAY_EXP}</span>
+      </dt>
+      <dd><input type="number" id="{PRJ_CONFIG}number_of_projects_to_display" size="3" min="0" max="999" value="{PRJ_NUMBER_OF_PROJECTS_TO_DISPLAY}" /></dd>
+    </dl>
+  </fieldset>
+  <fieldset>
+    <legend>{L_ACP_SUBMIT_CHANGES}</legend>
+    <p class="submit-buttons">
+      <input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+      <input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+    </p>
+      {S_FORM_TOKEN}
+  </fieldset>
+</form>
+<!-- INCLUDE overall_footer.html -->

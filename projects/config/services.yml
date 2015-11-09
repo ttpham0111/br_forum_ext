@@ -1,0 +1,18 @@
+services:
+  ttpham.projects.listener:
+    class: ttpham\projects\event\listener
+    arguments:
+      - @ttpham.projects.controller
+      - @template
+    tags:
+      - { name: event.listener }
+
+  ttpham.projects.controller:
+    class: ttpham\projects\controller\main
+    arguments:
+      - @config
+      - @dbal.conn
+      - @template
+      - @user
+      - %core.root_path%
+      - %core.php_ext%

@@ -1,9 +1,16 @@
-#Ignore everything.
-*
+/*
+!/*/
 
-#Except...
-!.gitignore
-!/basic_blue_pink/
+/basic
+/david63
+/basic_blue_pink/theme/images/*
+
+/boardannouncements/*
+!/boardannouncements/styles/
+/boardannouncements/styles/*
 !/boardannouncements/styles/basic_blue_pink/
-!/dmzx/styles/basic_blue_pink/
-!/projects/
+
+/mchat/*
+!/mchat/styles/
+/mchat/styles/*
+!/mchat/styles/basic_blue_pink/
