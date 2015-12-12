@@ -1,0 +1,23 @@
+<!-- IF PRJ_PROJECTS_TABLE_DISPLAY or PRJ_RELEASES_TABLE_DISPLAY -->
+  <!-- IF $prj_projects_css_included neq true -->
+    <!-- INCLUDECSS @ttpham_projects/projects.css -->
+    <!-- DEFINE $prj_projects_css_included = true -->
+  <!-- ENDIF -->
+<!-- ENDIF -->
+
+<!-- IF PRJ_STAGES_HEADER_DISPLAY and $prj_stages_header_css_included neq true -->
+  <!-- INCLUDECSS @ttpham_projects/stages_header.css -->
+<!-- DEFINE $prj_stages_header_css_included = true --><!-- ENDIF -->
+
+<!-- IF PRJ_SHOW_STAGE_FORWARD_BUTTON and $prj_stage_forward_button_css_included neq true -->
+  <!-- INCLUDECSS @ttpham_projects/stage_forward_button.css -->
+  <!-- DEFINE $prj_stage_forward_button_css_included = true -->
+<!-- ENDIF -->
+
+<!-- IF PRJ_DISPLAY_PROJECTS_FORM and $prj_form_dependencies_included neq true -->
+  <!-- INCLUDECSS @ttpham_projects/projects_form.css -->
+  <!-- INCLUDECSS @ttpham_projects/jquery-ui.min.css -->
+  <!-- INCLUDECSS @ttpham_projects/jquery-ui.structure.min.css -->
+  <!-- INCLUDECSS @ttpham_projects/jquery-ui.theme.min.css -->
+  <!-- DEFINE $prj_form_dependencies_included = true -->
+<!-- ENDIF -->

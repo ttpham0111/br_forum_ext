@@ -1,0 +1,82 @@
+<!-- INCLUDE overall_header.html -->
+
+<h1>{L_PRJ_SETTINGS}</h1>
+
+<form id="acp_board" method="post" action="{U_ACTION}">
+  <fieldset>
+    <dl>
+      <dt>
+        <label for="prj_default_table_size">
+        {L_PRJ_DEFAULT_TABLE_SIZE}{L_COLON}</label><br /><span>{L_PRJ_DEFAULT_TABLE_SIZE_EXP}</span>
+      </dt>
+      <dd><input type="number" name="prj_default_table_size" size="3" min="0" max="999" value="{PRJ_DEFAULT_TABLE_SIZE}" /></dd>
+    </dl>
+  </fieldset>
+  <fieldset>
+    <dl>
+      <dt>
+        <label for="prj_releases_forum_id">{L_PRJ_RELEASES_FORUM_ID}{L_COLON}</label><br /><span>{L_PRJ_RELEASES_FORUM_ID_EXP}</span>
+      </dt>
+      <dd><input type="number" name="prj_releases_forum_id" size="3" min="0" max="999" value="{PRJ_RELEASES_FORUM_ID}" /></dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="prj_number_of_releases_to_display">{L_PRJ_NUMBER_OF_RELEASES_TO_DISPLAY}{L_COLON}</label><br />
+        <span>{L_PRJ_NUMBER_OF_RELEASES_TO_DISPLAY_EXP}</span>
+      </dt>
+      <dd><input type="number" name="prj_number_of_releases_to_display" size="3" min="0" max="999" value="{PRJ_NUMBER_OF_RELEASES_TO_DISPLAY}" /></dd>
+    </dl>
+  </fieldset>
+  <fieldset>
+    <dl>
+      <dt>
+        <label for="prj_project_forum_ids">{L_PRJ_PROJECT_FORUM_IDS}{L_COLON}</label><br /><span>{L_PRJ_PROJECT_FORUM_IDS_EXP}</span>
+      </dt>
+      <dd><input type="text" name="prj_project_forum_ids" value="{PRJ_PROJECT_FORUM_IDS}" /></dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="prj_number_of_projects_to_display">{L_PRJ_NUMBER_OF_PROJECTS_TO_DISPLAY}{L_COLON}</label><br />
+        <span>{L_PRJ_NUMBER_OF_PROJECTS_TO_DISPLAY_EXP}</span>
+      </dt>
+      <dd><input type="number" name="prj_number_of_projects_to_display" size="3" min="0" max="999" value="{PRJ_NUMBER_OF_PROJECTS_TO_DISPLAY}" /></dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="prj_days_threshold">
+        {L_PRJ_DAYS_THRESHOLD}{L_COLON}</label><br /><span>{L_PRJ_DAYS_THRESHOLD_EXP}</span>
+      </dt>
+      <dd><input type="number" name="prj_days_threshold" size="3" min="0" max="999" value="{PRJ_DAYS_THRESHOLD}" /></dd>
+    </dl>
+    <dl>
+      <dt><label for="prj_allow_projects_form">{L_PRJ_ALLOW_PROJECTS_FORM}{L_COLON}</label><br /><span>{L_PRJ_ALLOW_PROJECTS_FORM_EXP}</span></dt>
+      <dd><input type="radio" class="radio" name="prj_allow_projects_form" value="1" <!-- IF PRJ_ALLOW_PROJECTS_FORM -->checked="checked"<!-- ENDIF -->/> {L_YES} &nbsp;
+      <input type="radio" class="radio" name="prj_allow_projects_form" value="0" <!-- IF not PRJ_ALLOW_PROJECTS_FORM -->checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+    </dl>
+  </fieldset>
+  <fieldset style="background-color: salmon">
+    <dl>
+      <dt>
+        <label for="prj_reset_database">{L_PRJ_RESET_DATABASE}{L_COLON}</label><br />
+        <span>{L_PRJ_RESET_DATABASE_EXP}</span>
+      </dt>
+      <dd>
+        <label>
+          <input type="radio" class="radio" name="prj_reset_database" value="1"<!-- IF PRJ_RESET_DATABASE --> checked="checked"<!-- ENDIF --> /> {L_YES}
+        </label>
+        <label>
+          <input type="radio" class="radio" name="prj_reset_database" value="0"<!-- IF not PRJ_RESET_DATABASE --> checked="checked"<!-- ENDIF --> /> {L_NO}
+        </label>
+      </dd>
+    </dl>
+  </fieldset>
+  <fieldset>
+    <legend>{L_ACP_SUBMIT_CHANGES}</legend>
+    <p class="submit-buttons">
+      <input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+      <input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+    </p>
+      {S_FORM_TOKEN}
+  </fieldset>
+</form>
+<!-- INCLUDE overall_footer.html -->

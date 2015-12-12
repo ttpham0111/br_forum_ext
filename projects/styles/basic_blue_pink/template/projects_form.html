@@ -1,0 +1,19 @@
+<div class="prj-form">
+  <label><strong>{L_PRJ_FORM_DEADLINES}{L_COLON}</strong></label><br />
+  <div class="prj-form-inner">
+    <!-- BEGIN prj_deadlines -->
+      <div class="prj-form-group">
+        <div>
+          <div class="prj-form-label"><label>Stage Name:</label></div>
+          <input type="text" name="prj_stage_names[]" size="20" maxlength="120" tabindex="2" value="{prj_deadlines.PROJECT_STAGE}" class="inputbox autowidth">
+        </div>
+        <div>
+          <div class="prj-form-label"><label>Deadline Date:</label></div>
+          <input type="text" name="" size="20" maxlength="120" tabindex="2" value="{prj_deadlines.PROJECT_DEADLINE_DATE}" class="inputbox autowidth prj-date" readonly="readonly">
+          <input type="text" value="{prj_deadlines.PROJECT_DEADLINE_UNIX}" class="prj-date-hidden" name="prj_dates[]" hidden>
+        </div>
+      </div>
+    <!-- END prj_deadlines -->
+  </div>
+  <a id="prj-add-deadline">{L_PRJ_FORM_ADD_DEADLINE}</a>
+</div>

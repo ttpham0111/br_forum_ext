@@ -1,3 +1,9 @@
-<!-- IF PRJ_RELEASES_TABLE_DISPLAY and $PRJ_RELEASES_TABLE_INCLUDED neq true -->
+<!-- IF PRJ_NEW_PROJECTS_TABLE_DISPLAY and $prj_new_projects_table_included neq true -->
+  <!-- INCLUDE new_projects_table_body.html -->
+<!-- DEFINE $prj_new_projects_table_included = true --><!-- ENDIF -->
+<!-- IF PRJ_ONGOING_PROJECTS_TABLE_DISPLAY and $prj_ongoing_projects_table_included neq true -->
+  <!-- INCLUDE ongoing_projects_table_body.html -->
+<!-- DEFINE $prj_projects_table_included = true --><!-- ENDIF -->
+<!-- IF PRJ_RELEASES_TABLE_DISPLAY and $prj_releases_table_included neq true -->
   <!-- INCLUDE releases_table_body.html -->
-<!-- DEFINE $PRJ_RELEASES_TABLE_INCLUDED = true --><!-- ENDIF -->
+<!-- DEFINE $prj_releases_table_included = true --><!-- ENDIF -->

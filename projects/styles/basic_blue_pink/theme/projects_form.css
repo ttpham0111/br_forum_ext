@@ -1,0 +1,15 @@
+.prj-form-inner {
+  margin-left: 5%;
+  margin-top: 10px;
+}
+.prj-form-label {
+  float: left;
+  width: 13.29%;
+}
+.prj-form-group {
+  margin-bottom: 10px !important;
+}
+#prj-add-deadline {
+  margin-left: 10%;
+  cursor: pointer;
+}

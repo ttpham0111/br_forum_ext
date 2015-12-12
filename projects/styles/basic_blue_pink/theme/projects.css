@@ -1,0 +1,81 @@
+.prj-table {
+  width: 32.29329%;
+  float: left;
+  clear: none;
+}
+.prj-list {
+  margin-right: 0 !important;
+  padding-left: 23px !important;
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+  min-height: 0 !important;
+}
+.prj-topictitle {
+  font-size: 11px !important; 
+  font-variant: small-caps;
+  padding-bottom: 0 !important;
+}
+.prj-icon > dt {
+  margin-right: 0 !important;
+  min-height: 0 !important;
+  position: relative;
+}
+.prj-icon > dt:hover {
+  background-color: #FAFAFA;
+  border: 1px solid #4cdcff;
+  transform: scale(1.5);
+  position: relative;
+  z-index: 1000;
+}
+.prj-icon > dt:before {
+  width: 7%;
+  height: 100%;
+  text-align: center;
+  vertical-align: middle;
+  position: absolute;
+  top: 50%;
+  margin-top: -9px;
+  float: left;
+  font-size: 13px;
+  font-family: FontAwesome;
+}
+.releases-icon > dt:before {
+  content: '\f144';
+  color: gray;
+  font-size: 15px;
+  margin-top: -10px;
+}
+.prj-sign-ups > dt:before {
+  content: '\f234';
+}
+.prj-sign-ups-late > dt:before {
+  content: '\f234';
+  color: red;
+}
+.prj-coding > dt:before {
+  content: '\f1fc';
+  color: #FFB1D8;
+}
+.prj-coding-late > dt:before {
+  content: '\f1fc';
+  color: red;
+}
+.prj-recording > dt:before {
+  content: '\f130';
+  color: #99CC33;
+}
+.prj-recording-late > dt:before {
+  content: '\f130';
+  color: red;
+}
+.prj-mixing > dt:before {
+  content: '\f001';
+  color: #4cdcff;
+}
+.prj-mixing-late > dt:before {
+  content: '\f001';
+  color: red;
+}
+.prj-late {
+  color: red;
+}

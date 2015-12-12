@@ -1,0 +1,15 @@
+<div class="prj-stages-header">
+  <ul>
+    <!-- BEGIN prj_stages_header -->
+    <li<!-- IF prj_stages_header.CURRENT_STAGE --> class="prj-current-stage"<!-- ENDIF -->>
+      <div>
+        {prj_stages_header.PROJECT_STAGE}
+        <div class="prj-deadline-date">
+          {prj_stages_header.PROJECT_DEADLINE_DATE}
+        </div>
+      </div>
+    </li>
+    <!-- IF not prj_stages_header.LAST_STAGE --><li class="prj-divider"></li><!-- ENDIF -->
+    <!-- END prj_stages_header -->
+  </ul>
+</div>

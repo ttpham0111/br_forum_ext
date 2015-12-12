@@ -20,4 +20,13 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
+  'RELEASES_TABLE'         => 'New Releases',
+  'NEW_PROJECTS_TABLE'     => 'New Projects',
+  'ONGOING_PROJECTS_TABLE' => 'Ongoing Projects',
+
+  'PRJ_RELEASE_PROJECT' => 'Release project',
+  'PRJ_STAGEUP'         => 'Change status to',
+  
+  'PRJ_FORM_DEADLINES'    => 'Deadlines',
+  'PRJ_FORM_ADD_DEADLINE' => '(+) Click to add another deadline.'
 ));

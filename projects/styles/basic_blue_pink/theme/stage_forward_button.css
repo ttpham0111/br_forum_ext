@@ -1,0 +1,9 @@
+.prj-stageup-icon:before {
+  content: "\f101";
+  color: #fff;
+  font-size: 15px;
+}
+.prj-stageup-icon {
+  background-color: #fa00a8;
+  background-image: none;
+}

@@ -17,13 +17,18 @@ class projects_info
 	function module()
 	{
 		return array(
-      'filename' => '\ttpham\projects_module',
-      'title'    => 'PROJECTS',
+      'filename' => '\ttpham\projects\acp\projects_module',
+      'title'    => 'PROJECT',
       'modes'    => array(
         'settings' => array(
-          'title' => 'ACP_PROJECTS_SETTINGS',
-          'auth' => 'ext_ttpham/projects && acl_a_board',
-          'cat' => array('PROJECTS')
+          'title'  => 'ACP_PROJECTS_SETTINGS',
+          'auth'   => 'ext_ttpham/projects && acl_a_board',
+          'cat'    => array('PROJECTS')
+        ),
+        'manage_projects' => array(
+          'title' => 'ACP_MANAGE_PROJECTS',
+          'auth'  => 'ext_ttpham/projects && acl_a_board',
+          'cat'   => array('PROJECTS')
         )
       )
 		);

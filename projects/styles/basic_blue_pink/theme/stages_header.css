@@ -1,0 +1,43 @@
+.prj-stages-header {
+  width: auto;
+  height: 27px;
+  border: solid #E4E4E4;
+  border-width: 1px 1px 0 1px;
+  display: table;
+  margin: 0 auto;
+}
+.prj-stages-header > ul {
+  list-style: none;
+  margin: 0 15px;
+}
+.prj-stages-header > ul > li {
+  display: inline-block;
+  padding: 0 10px;
+  color: #a4a4a4;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+}
+.prj-current-stage {
+  color: #000 !important;
+  background-color: #FFF4F9;
+  border: solid;
+  border-width: 3px;
+  border-top-color: #FFFAFA;
+  border-right-color: #FFFAFA;
+  border-left-color: #FFEBEB;
+  border-bottom-color: #FFEBEB;
+}
+.prj-current-stage > div {
+  margin: -3px;
+}
+.prj-deadline-date {
+  font-size: 10px;
+}
+.prj-divider {
+  padding: 0 !important;
+  height: 25px;
+  border: solid #E4E4E4;
+  border-width: 0 0 0 1px;
+}
