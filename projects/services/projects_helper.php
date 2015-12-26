@@ -52,10 +52,10 @@ class projects_helper
   *
   * @return  bool   @is_valid  True if valid, false otherwise.
   */
-  public function form_valid(&$event, $releases = false)
+  public function form_valid($event, $releases = false)
   {
     $forum_id = $event['forum_id'];
-    if (!$this->in_valid_forum($forum_id, $releases))
+    if (!$this->is_valid_forum($forum_id, $releases))
       return false;
 
     // If mode is not posting, or editing first post, don't show extra fields.
@@ -87,12 +87,40 @@ class projects_helper
   /**
   * Check if the forum is part of one of the special forums (releases/projects).
   *
+  * @param   int   @forum_id      The id of the topic.
+  *          bool  @releases      Check releases forum instead.
+  *
+  * @return  bool  @is_valid      True if valid, false otherwise.
+  */
+  public function in_valid_forum($topic_id, $releases = false)
+  {
+    if ($releases)
+      $allowed_forum_ids = array($this->config['prj_releases_forum_id']);
+    else
+      $allowed_forum_ids = explode(',', $this->config['prj_project_forum_ids']);
+
+    $sql = 'SELECT forum_id
+            FROM ' . TOPICS_TABLE . '
+            WHERE topic_id = ' . $topic_id;
+    $result = $this->db->sql_query($sql);
+    $row    = $this->db->sql_fetchrow($result);
+    $this->db->sql_freeresult($result);
+
+    $forum_id = $row['forum_id'];
+    if (!in_array($forum_id, $allowed_forum_ids))
+      return false;
+    return true;
+  }
+
+  /**
+  * Check if the forum is part of one of the special forums (releases/projects).
+  *
   * @param   int   @forum_id      The id of the forum.
   *          bool  @releases      Check releases forum instead.
   *
   * @return  bool  @is_valid      True if valid, false otherwise.
   */
-  public function in_valid_forum($forum_id, $releases = false)
+  public function is_valid_forum($forum_id, $releases = false)
   {
     if ($releases)
       $allowed_forum_ids = array($this->config['prj_releases_forum_id']);
@@ -102,6 +130,66 @@ class projects_helper
     if (!in_array($forum_id, $allowed_forum_ids))
       return false;
     return true;
+  }
+
+  /**
+  * Check if the topic is an announcement/sticky.
+  *
+  * @param    int    @topic_id    The id of the topic.
+  */
+  public function is_special_topic($topic_id)
+  {
+    $sql = 'SELECT topic_type
+        FROM ' . TOPICS_TABLE . '
+        WHERE topic_id = ' . $topic_id;
+    $result = $this->db->sql_query($sql);
+    $row = $this->db->sql_fetchrow($result);
+    $this->db->sql_freeresult($result);
+    if ($row['topic_type'] !== '0')
+      return true;
+    return false;
+  }
+
+  /**
+  * Determine where a topic is moved to when it is released.
+  *
+  * Note: Does not account for syntax errors and for when move rules
+  *       set "from" and "to" to the same forum.
+  *
+  * @param     int    @forum_id     The forum id of the topic to be moved.
+  *
+  * @return    int    @to_forum_id  The forum id the topic should be moved to.
+  */
+  public function get_to_forum_id($forum_id)
+  {
+    $to_forum_id = 0;
+
+    $move_rules = (isset($this->config['prj_move_rules'])) ? $this->config['prj_move_rules'] : '';
+    if (!$move_rules)
+      return $to_forum_id;
+
+    // Parse move rules. Ex: "11,4|5,2|1,7 to 33,12,3"
+    $move_rules = explode(' to ', $move_rules);
+    if (sizeof($move_rules) !== 2)
+      return;
+
+    $move_from = explode('|', $move_rules[0]);
+    $move_to   = explode(',', $move_rules[1]);
+
+    if (sizeof($move_from) !== sizeof($move_to))
+      return;
+
+    // Create move map.
+    $move = array();
+    for ($i = 0; $i < sizeof($move_from); ++$i)
+    {
+      $from_forum_ids = explode(',', $move_from[$i]);
+      foreach ($from_forum_ids as $from_forum_id)
+        $move[$from_forum_id] = $move_to[$i];
+    }
+
+    $to_forum_id = (isset($move[$forum_id])) ? $move[$forum_id] : 0;
+    return $to_forum_id;
   }
 
   /**
@@ -119,6 +207,85 @@ class projects_helper
     $release_id = $this->db->sql_nextid();
 
     return $release_id;
+  }
+
+  /**
+  * Adds a new release code to the database if it doesn't exist.
+  *
+  * @param  String   @release_code_name   The name of the new/existing release code.
+  *                  @index               The index of the release code.
+  *
+  * @return int      @release_code_id     The id of the new/existing release code.
+  */
+  function add_new_release_code($release_code_name, $index = 0)
+  {
+    $sql = 'INSERT INTO ' . $this->table_prefix . 'prj_release_codes
+            VALUES (NULL, "' . $release_code_name . '", ' . $index . ')';
+    $this->db->sql_query($sql);
+    $release_code_id = $this->db->sql_nextid();
+
+    return $release_code_id;
+  }
+
+  /**
+  * Increment the release code index in the database.
+  *
+  * @param    int   @release_code_id    The id of the release code to modify.
+  */
+  function increment_index($release_code_id)
+  {
+    $sql = 'UPDATE ' . $this->table_prefix . 'prj_release_codes
+            SET release_code_index = release_code_index + 1
+            WHERE release_code_id = ' . $release_code_id;
+    $this->db->sql_query($sql);
+  }
+
+  /**
+  * Modify the release code index in the database.
+  *
+  * @param    int   @release_code_id    The id of the release code to modify.
+  *           int   @index              The index of the release code.
+  */
+  function modify_release_code_index($release_code_id, $index = 0)
+  {
+    $sql = 'UPDATE ' . $this->table_prefix . 'prj_release_codes
+            SET release_code_index = ' . $index . '
+            WHERE release_code_id = ' . $release_code_id;
+    $this->db->sql_query($sql);
+  }
+
+  /**
+  * Gets all the release codes currently in the database.
+  *
+  * @return    Array    @release_codes    The results of the database.
+  */
+  function get_release_codes()
+  {
+    $sql = 'SELECT *
+            FROM ' . $this->table_prefix . 'prj_release_codes
+            ORDER BY release_code_id ASC';
+    $result = $this->db->sql_query($sql);
+    $rowset = $this->db->sql_fetchrowset($result);
+    $this->db->sql_freeresult($result);
+    return $rowset;
+  }
+
+  function get_release_code($release_code_id)
+  {
+    $sql = 'SELECT *
+            FROM ' . $this->table_prefix . 'prj_release_codes
+            WHERE release_code_id = ' . $release_code_id;
+    $result = $this->db->sql_query_limit($sql, 1);
+    $row = $this->db->sql_fetchrow($result);
+    $this->db->sql_freeresult($result);
+    return $row;
+  }
+
+  function delete_release_code($release_code_id)
+  {
+    $sql = 'DELETE FROM ' . $this->table_prefix . 'prj_release_codes
+            WHERE release_code_id = ' . $release_code_id;
+    $this->db->sql_query($sql);
   }
 
   /**
@@ -181,7 +348,10 @@ class projects_helper
       $sql_array['ORDER_BY'] = $options['ORDER_BY'];
 
     $sql = $this->db->sql_build_query('SELECT', $sql_array);
-    $result = $this->db->sql_query($sql);
+    if (isset($options['LIMIT']))
+      $result = $this->db->sql_query_limit($sql, $options['LIMIT']);
+    else
+      $result = $this->db->sql_query($sql);
     $rowset = $this->db->sql_fetchrowset($result);
     $this->db->sql_freeresult($result);
 
@@ -270,10 +440,22 @@ class projects_helper
   }
 
   /**
+  * Checks if the project is on the last stage.
+  *
+  * @param     int    @topic_id        The topic id of the project.
+  *
+  * @return    bool   @is_last_stage   True if last stage, false otherwise.
+  */
+  public function is_last_stage($topic_id)
+  {
+    $next_stage = $this->get_next_stage($topic_id);
+    return $next_stage['stage_id'] === 0;
+  }
+
+  /**
   * Gets the next stage for this project.
   *
-  * @param    int   @project_id         The id of the project.
-  *           int   @current_stage_id   The id of the project's current stage.
+  * @param    int   @topic_id         The topic id of the project.
   *
   * @return   Array @next_stage         The next stage object containing:
   *                                       status_name,
@@ -281,41 +463,32 @@ class projects_helper
   *                                       project_deadline
   *                                     Will return null if not found.
   */
-  public function get_next_stage($project_id, $current_stage_id)
+  public function get_next_stage($topic_id)
   {
-    $stages = $this->get_project_data(
-                array('project_id' => $project_id),
+    $next_stage = $this->get_project_data(
+                array('topic_id' => $topic_id),
                 array('SELECT'     => array('sts.status_name',
                                             'stg.stage_id',
                                             'stg.project_deadline'
                                       ),
-                      'ORDER_BY'   => 'stg.project_deadline ASC'
+                      'WHERE'      => 'stg.project_deadline > (SELECT stg_inner.project_deadline
+                                                               FROM ' . $this->table_prefix . 'prj_stages stg_inner
+                                                                 LEFT JOIN ' . $this->table_prefix . 'prj_projects p_inner
+                                                                 ON p_inner.current_stage_id = stg_inner.stage_id
+                                                               WHERE p_inner.topic_id = ' . $topic_id . ')',
+                      'ORDER_BY'   => 'stg.project_deadline ASC',
+                      'LIMIT'      => 1
                 )
     );
-
-    $next_stage = array(
-      'status_name'      => '',
-      'stage_id'         => 0,
-      'project_deadline' => 0
-    );
-
-    // This project has no stages.
-    if (!sizeof($stages))
-      return $next_stage;
-
-    // Get next stage.
-    else
-    {
-      for ($i = 0; $i < sizeof($stages) - 1; ++$i)
-      {
-        if ($stages[$i]['stage_id'] == $current_stage_id)
-          $next_stage = $stages[$i + 1];
-      }
-    }
-    return $next_stage;
+    if (!$next_stage)
+      return array(
+        'status_name'      => '',
+        'stage_id'         => 0,
+        'project_deadline' => 0);
+    return $next_stage[0];
   }
 
-    /**
+  /**
   * Gets the project stage with the earliest deadline.
   *
   * @param     int    @project_id      The id of the project.
@@ -374,7 +547,7 @@ class projects_helper
   */
   public function get_statuses($limit = 0)
   {
-    $sql = 'SELECT status_id, status_name
+    $sql = 'SELECT *
             FROM ' . $this->table_prefix . 'prj_statuses
             ORDER BY status_id ASC';
 
@@ -385,6 +558,40 @@ class projects_helper
     $rowset = $this->db->sql_fetchrowset($result);
     $this->db->sql_freeresult($result);
     return $rowset;
+  }
+
+  /**
+  * Gets primary statuses from the database.
+  *
+  * @return   Array  @statuses  The statuses returned from the query.
+  */
+  public function get_primary_statuses()
+  {
+    $sql = 'SELECT *
+            FROM ' . $this->table_prefix . 'prj_statuses
+            WHERE primary_status = 1
+            ORDER BY status_id ASC';
+    $result = $this->db->sql_query($sql);
+    $rowset = $this->db->sql_fetchrowset($result);
+    $this->db->sql_freeresult($result);
+    return $rowset;
+  }
+
+  /**
+  * Gets the status ids of all statuses in use.
+  *
+  * @return     Array    @statuses_in_use   The statuses currently used by active projects.
+  */
+  public function get_statuses_in_use()
+  {
+    $sql = 'SELECT DISTINCT stg.status_id
+            FROM ' . $this->table_prefix . 'prj_stages stg
+            ORDER BY status_id ASC';
+    $result = $this->db->sql_query($sql);
+    $statuses_in_use = array();
+    while ($row = $this->db->sql_fetchrow())
+      $statuses_in_use[] = $row['status_id'];
+    return $statuses_in_use;
   }
   /**
   * Gets the current status id of the project.
@@ -412,20 +619,52 @@ class projects_helper
   * Adds a new status to the database if it doesn't exist.
   *
   * @param  String   @status_name   The name of the new/existing status.
+  *                  @is_primary    Is the status a primary status?
   *
   * @return int      @status_id     The id of the new/existing status.
   */
-  public function add_new_status($status_name)
+  public function add_new_status($status_name, $is_primary = false)
   {
+    $primary = ($is_primary) ? '1' : '0';
     // Add statuses if not exists.
     $sql = 'INSERT INTO ' . $this->table_prefix . 'prj_statuses
-            VALUES (NULL, "' . $status_name . '")
+            VALUES (NULL, "' . $status_name . '", ' . (($is_primary) ? '1' : '0') . ')
             ON DUPLICATE KEY
               UPDATE status_id = LAST_INSERT_ID(status_id)';
     $this->db->sql_query($sql);
     $status_id = $this->db->sql_nextid();
 
     return $status_id;
+  }
+
+  /**
+  * Set statuses to primary status.
+  *
+  * @param    Array   @status_ids     The ids of the statuses to make primary.
+  */
+  public function set_primary_statuses($status_ids)
+  {
+    // Set all statuses to non-primary first.
+    $sql = 'UPDATE ' . $this->table_prefix . 'prj_statuses
+            SET primary_status = 0';
+    $this->db->sql_query($sql);
+
+    $sql = 'UPDATE ' . $this->table_prefix . 'prj_statuses
+            SET primary_status = 1
+            WHERE ' . $this->db->sql_in_set('status_id', $status_ids);
+    $this->db->sql_query($sql);
+  }
+
+  /**
+  * Deletes the status from the database.
+  *
+  * @param    int     @status_id     The id of the status to be deleted.
+  */
+  public function delete_status($status_id)
+  {
+    $sql = 'DELETE FROM ' . $this->table_prefix . 'prj_statuses
+            WHERE status_id = ' . $status_id;
+    $this->db->sql_query($sql);
   }
 
   /**
@@ -476,6 +715,7 @@ class projects_helper
                                             'stg.project_deadline',
                                             'sts.status_name'
                                       ),
+                      'WHERE'      => 'p.current_stage_id = stg.stage_id'
                 )
     );
     if (!$rowset)
@@ -516,5 +756,95 @@ class projects_helper
     $pattern = '/^\[(.*?)\] (.+) \((.*?)\)$/';
     $project_title = trim(preg_replace($pattern, '$2', $topic_title));
     return $project_title;
+  }
+
+  /**
+  * Prune projects that are no longer found in the project forums along with its
+  * stages in the projects table and stages table.
+  */
+  public function prune_projects()
+  {
+    $project_forum_ids = explode(',', $this->config['prj_project_forum_ids']);
+
+    // Grab all projects that are no longer attached to an active project
+    // and delete them from the table.
+    $rowset = $this->get_project_data(
+                array(),
+                array('SELECT' => array('p.project_id'),
+                      'WHERE'  => 'p.topic_id = 0
+                                   OR t.topic_id is NULL
+                                   OR t.topic_visibility <> 1
+                                   OR ' . $this->db->sql_in_set('t.forum_id', $project_forum_ids, true),
+                      'JOIN_TOPICS_TABLE' => true
+                )
+    );
+    $project_ids = array(0);
+    if ($rowset)
+    {
+      foreach ($rowset as $row)
+        $project_ids[] = $row['project_id'];
+
+      $sql = 'DELETE FROM ' . $this->table_prefix . 'prj_projects
+              WHERE ' . $this->db->sql_in_set('project_id', $project_ids);
+      $this->db->sql_query($sql);
+    }
+
+    // Delete orphaned stages.
+    $sql = 'SELECT stg.stage_id
+            FROM ' . $this->table_prefix . 'prj_stages stg
+            LEFT JOIN ' . $this->table_prefix . 'prj_projects p
+              ON p.project_id = stg.project_id
+            WHERE ' . $this->db->sql_in_set('stg.project_id', $project_ids) . '
+              OR p.project_id is NULL
+              OR stg.project_id = 0';
+    $result = $this->db->sql_query($sql);
+    $rowset = $this->db->sql_fetchrowset($result);
+    if ($rowset)
+    {
+      $stage_ids = array();
+      foreach ($rowset as $row)
+        $stage_ids[] = $row['stage_id'];
+
+      $sql = 'DELETE FROM ' . $this->table_prefix . 'prj_stages
+              WHERE ' . $this->db->sql_in_set('stage_id', $stage_ids);
+      $this->db->sql_query($sql);
+    }
+  }
+
+  /**
+  * Prune releases so that only x times the projects table size remain
+  * in the database.
+  *
+  * The ratio to keep can be specified in the extension settings.
+  */
+  public function prune_releases($override = false)
+  {
+    $reserve_ratio     = $this->config['prj_releases_table_ratio'];
+    $required_size     = $this->config['prj_projects_table_size'];
+    $releases_forum_id = $this->config['prj_releases_forum_id'];
+
+    // Drop all rows from the releases table.
+    $sql = 'TRUNCATE TABLE ' . $this->table_prefix . 'prj_releases';
+    $this->db->sql_query($sql);
+
+    // Add data to releases table.
+    $sql = 'SELECT topic_id
+            FROM ' . TOPICS_TABLE . '
+            WHERE forum_id = ' . $releases_forum_id . '
+              AND topic_visibility = 1
+              AND topic_type = 0
+            ORDER BY topic_time DESC';
+    if ($override)
+      $result = $this->db->sql_query($sql);
+    else
+      $result = $this->db->sql_query_limit($sql, $required_size * $reserve_ratio);
+
+    $topic_ids = array();
+    while ($row = $this->db->sql_fetchrow($result))
+      $topic_ids[] = array('topic_id' => $row['topic_id']);
+    $this->db->sql_freeresult($result);
+
+    if ($topic_ids)
+      $this->db->sql_multi_insert($this->table_prefix . 'prj_releases', $topic_ids);
   }
 }

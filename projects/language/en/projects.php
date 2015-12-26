@@ -28,5 +28,9 @@ $lang = array_merge($lang, array(
   'PRJ_STAGEUP'         => 'Change status to',
   
   'PRJ_FORM_DEADLINES'    => 'Deadlines',
-  'PRJ_FORM_ADD_DEADLINE' => '(+) Click to add another deadline.'
+  'PRJ_FORM_ADD_DEADLINE' => '(+) Click to add another deadline.',
+
+  'PRJ_STAGES_DEADLINE_CONNECT' => 'deadline is on',
+
+  'PRJ_RELEASE_CODES_LIST' => 'Release Code'
 ));

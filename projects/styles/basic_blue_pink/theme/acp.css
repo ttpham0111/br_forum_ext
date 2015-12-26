@@ -1,0 +1,36 @@
+.prj-acp-header {
+  margin-bottom: 7px;
+}
+.prj-acp-header > li {
+  border-bottom: 1px solid #bbb;
+}
+.prj-acp-form > ul {
+  list-style-type: none;
+}
+.prj-acp-form > ul > li > dl {
+  margin-bottom: 5px;
+}
+.prj-acp-form > ul > li > dl > dt {
+  width: 25%;
+  border-right: none;
+  padding-top: 0;
+}
+.prj-acp-form > ul > li > dl > dd {
+  border-left: none;
+  margin-left: 30%;
+}
+.prj-acp-form > ul > li > dl > dd > div {
+  display: inline-block;
+  width: 20%;
+  text-align: center;
+}
+.prj-acp-statuses > dl > dt, .prj-acp-release-codes > dl > dt {
+  text-align: right;
+}
+.prj-acp-header > li > dl > dt {
+  text-align: center;
+}
+.prj-acp-info {
+  margin-bottom: 7px;
+  width: 75%;
+}

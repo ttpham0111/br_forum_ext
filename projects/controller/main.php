@@ -23,6 +23,9 @@ class main
   /** @var \phpbb\db\driver\driver_interface */
   private $db;
 
+  /** @var \phpbb\request\request */
+  private $request;
+
   /** @var \phpbb\template\template */
   private $template;
 
@@ -45,6 +48,7 @@ class main
     \phpbb\auth\auth                          $auth,
     \phpbb\config\config                      $config,
     \phpbb\db\driver\driver_interface         $db,
+    \phpbb\request\request                    $request,
     \phpbb\template\template                  $template,
     \phpbb\user                               $user,
     \ttpham\projects\services\projects_helper $projects_helper,
@@ -56,6 +60,7 @@ class main
     $this->auth            = $auth;
     $this->config          = $config;
     $this->db              = $db;
+    $this->request         = $request;
     $this->template        = $template;
     $this->user            = $user;
     $this->projects_helper = $projects_helper;
@@ -72,51 +77,58 @@ class main
 
     $this->user->add_lang_ext('ttpham/projects', 'projects');
 
-    $num_projects = $this->display_projects_table();
-    $this->display_releases_table($num_projects);
+    $this->display_projects_table();
+    $this->display_releases_table();
   }
 
-  private function display_releases_table($num_projects, $tpl_loopname = 'prj_releases_table')
+  private function display_releases_table($tpl_loopname = 'prj_releases_table')
   {
     // Grab config variables.
     $num_releases = $this->config['prj_number_of_releases_to_display'];
     if ($num_releases == 0)
-      $num_releases = $num_projects;
+      $num_releases = $this->config['prj_projects_table_size'];
+
+    $releases_forum_id = $this->config['prj_releases_forum_id'];
+    $display_empty = false;
+    if ($releases_forum_id === '0')
+      $display_empty = true;
 
     // Grab topics in releases table.
     $sql = 'SELECT t.topic_id, t.topic_title, t.forum_id
             FROM ' . $this->table_prefix . 'prj_releases r
             LEFT JOIN ' . TOPICS_TABLE . ' t
               ON t.topic_id = r.topic_id
-            WHERE t.topic_id IS NOT NULL
+            WHERE ' . $this->db->sql_in_set('t.forum_id', array($releases_forum_id)) . '
+              AND t.topic_id IS NOT NULL
               AND t.topic_visibility = 1
+              AND t.forum_id <> 0
             ORDER BY t.topic_time DESC';
     $result = $this->db->sql_query_limit($sql, $num_releases);
-
-    $rowset = array();
-    while ($row = $this->db->sql_fetchrow($result))
-      $rowset[] = $row;
+    $rowset = $this->db->sql_fetchrowset($result);
     $this->db->sql_freeresult($results);
 
-    // No topics in releases table.
-    if (!sizeof($rowset))
-      return;
-
-    foreach ($rowset as $row)
+    if ($rowset)
     {
-      $project_name = $row['topic_title'];
-      $topic_id     = $row['topic_id'];
-      $forum_id     = $row['forum_id'];
-      
-      $view_topic_url = append_sid("{$this->root_path}viewtopic.$this->phpEx", 'f=' . $forum_id . '&amp;t=' . $topic_id);
+      foreach ($rowset as $row)
+      {
+        $project_name = $row['topic_title'];
+        $topic_id     = $row['topic_id'];
+        $forum_id     = $row['forum_id'];
+        
+        $view_topic_url = append_sid("{$this->root_path}viewtopic.$this->phpEx", 'f=' . $forum_id . '&amp;t=' . $topic_id);
 
-      $tpl_ary = array(
-        'PROJECT_NAME'   => $project_name,
-        'U_VIEW_TOPIC'   => $view_topic_url
-      );
+        $tpl_ary = array(
+          'PROJECT_NAME'   => $project_name,
+          'U_VIEW_TOPIC'   => $view_topic_url
+        );
 
-      $this->template->assign_block_vars($tpl_loopname, $tpl_ary);
+        $this->template->assign_block_vars($tpl_loopname, $tpl_ary);
+      }
     }
+
+    // Fill the table with empty entries if needed.
+    for ($i = ($display_empty) ? 0 : sizeof($rowset); $i < $num_releases; ++$i)
+      $this->template->assign_block_vars($tpl_loopname, array());
 
     $this->template->assign_vars(array(
       strtoupper($tpl_loopname) . '_DISPLAY' => true
@@ -151,7 +163,7 @@ class main
                                                    'sts.status_name'
                                              ),
                       'JOIN_TOPICS_TABLE' => true,
-                      'WHERE'             => '(p.current_stage_id = stg.stage_id OR p.current_stage_id = 0)',
+                      'WHERE'             => '(p.current_stage_id = stg.stage_id OR p.current_stage_id = 0) AND ' . $this->db->sql_in_set('t.forum_id', $project_forums),
                       'ORDER_BY'          => 'stg.project_deadline ASC'
                 )
     );
@@ -161,65 +173,64 @@ class main
     else
       $limit = $num_projects;
 
-    // No topics in projects table.
-    if (!$rowset)
-      return $default_size;
-
-    foreach ($rowset as $project)
+    if ($rowset)
     {
-      // Only show requested number of projects.
-      if ($limit == 0)
-        break;
-      --$limit;
-
-      // Set URL of project.
-      $view_topic_url = append_sid("{$this->root_path}viewtopic.$this->phpEx",'f=' . $project['forum_id'] . '&amp;t=' . $project['topic_id']);
-
-      $project_deadline = $project['project_deadline'];
-      $project_status   = $project['status_name'];
-      $now = time();
-
-      if (!$project_deadline || !is_string(getType($project_deadline)))
-        $project_deadline = '0';
-
-      // If project has been open for more than the threshold
-      // consider it an ongoing project.
-      $ongoing_project = false;
-      if (strtotime('+' . $days_threshold . ' days', $project['topic_time']) < $now)
-        $ongoing_project = true;
-
-      // Set project icon.
-      $project_icon = 'prj-' . str_replace(' ', '-', strtolower($project_status));
-
-      // Overwrite status if late.
-      $project_late = false;
-      if ($project_deadline && $now > $project_deadline)
+      foreach ($rowset as $project)
       {
-        $project_status = 'Late';
-        $project_late   = true;
-        if ($project_icon !== '')
-          $project_icon .= '-late';
-      }
+        // Only show requested number of projects.
+        if ($limit == 0)
+          break;
+        --$limit;
 
-      $project_name = $this->projects_helper->build_topic_title($project_status,
-                                                                $project['project_title'],
-                                                                $project_deadline);
-      $tpl_ary = array(
-        'PROJECT_NAME' => $project_name,
-        'PROJECT_LATE' => $project_late,
-        'PROJECT_ICON' => $project_icon,
-        'U_VIEW_TOPIC' => $view_topic_url
-      );
+        // Set URL of project.
+        $view_topic_url = append_sid("{$this->root_path}viewtopic.$this->phpEx",'f=' . $project['forum_id'] . '&amp;t=' . $project['topic_id']);
 
-      if ($ongoing_project)
-      {
-        ++$tpl_ongoing_projects_size;
-        $this->template->assign_block_vars($tpl_loopname_ongoing, $tpl_ary);
-      }
-      else
-      {
-        ++$tpl_new_projects_size;
-        $this->template->assign_block_vars($tpl_loopname_new, $tpl_ary);
+        $project_deadline = $project['project_deadline'];
+        $project_status   = $project['status_name'];
+        $now = time();
+
+        if (!$project_deadline || !is_string(getType($project_deadline)))
+          $project_deadline = '0';
+
+        // If project has been open for more than the threshold
+        // consider it an ongoing project.
+        $ongoing_project = false;
+        if (strtotime('+' . $days_threshold . ' days', $project['topic_time']) < $now)
+          $ongoing_project = true;
+
+        // Set project icon.
+        $project_icon = 'prj-' . str_replace(' ', '-', strtolower($project_status));
+
+        // Overwrite status if late.
+        $project_late = false;
+        if ($project_deadline && $now > $project_deadline)
+        {
+          $project_status = 'Late';
+          $project_late   = true;
+          if ($project_icon !== '')
+            $project_icon .= '-late';
+        }
+
+        $project_name = $this->projects_helper->build_topic_title($project_status,
+                                                                  $project['project_title'],
+                                                                  $project_deadline);
+        $tpl_ary = array(
+          'PROJECT_NAME' => $project_name,
+          'PROJECT_LATE' => $project_late,
+          'PROJECT_ICON' => $project_icon,
+          'U_VIEW_TOPIC' => $view_topic_url
+        );
+
+        if ($ongoing_project)
+        {
+          ++$tpl_ongoing_projects_size;
+          $this->template->assign_block_vars($tpl_loopname_ongoing, $tpl_ary);
+        }
+        else
+        {
+          ++$tpl_new_projects_size;
+          $this->template->assign_block_vars($tpl_loopname_new, $tpl_ary);
+        }
       }
     }
 
@@ -247,11 +258,17 @@ class main
       strtoupper($tpl_loopname_ongoing) . '_DISPLAY' => true,
     ));
 
-    return ($balance_factor > 0) ? $default_size : (($diff > 0) ? $tpl_new_projects_size : $tpl_ongoing_projects_size);
+    $table_size = ($balance_factor > 0) ? $default_size : (($diff > 0) ? $tpl_new_projects_size : $tpl_ongoing_projects_size);
+    if ($this->config['prj_projects_table_size'] !== $table_size)
+      $this->config->set('prj_projects_table_size', $table_size);
   }
 
   public function stageup($topic_id)
   {
+    // If the project needs to be released, we don't handle that here.
+    if ($this->request->variable('release', false))
+      return $this->release_project($topic_id);
+
     $rowset = $this->projects_helper->get_project_data(
                 array('topic_id'          => $topic_id),
                 array('SELECT'            => array('t.topic_poster',
@@ -280,24 +297,15 @@ class main
     // No project current stage means user entered from typing
     // in URL and this topic isn't actually a project.
     if (!$project_data['current_stage_id'])
-    {
-      redirect(append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", "f=$forum_id&amp;t=$topic_id"));
-      return;
-    }
+      return redirect(append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", "f=$forum_id&amp;t=$topic_id"));
 
     // Check if user has permission to change the stage of the project.
     if ($this->user->data['user_id'] != $$row['topic_poster'] &&
         !$this->auth->acl_get('m_prj_stageup'))
-    {
-      redirect(append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", "f=$forum_id&amp;t=$topic_id"));
-      return;
-    }
+      return redirect(append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", "f=$forum_id&amp;t=$topic_id"));
 
     // Move up the stage of the project.
-    $next_stage = $this->projects_helper->get_next_stage(
-                                            $project_data['project_id'],
-                                            $project_data['current_stage_id']
-                                          );
+    $next_stage = $this->projects_helper->get_next_stage($project_data['topic_id']);
     $project_data['current_stage_id'] = $next_stage['stage_id'];
     $this->projects_helper->edit_project('update_stage', $project_data);
 
@@ -311,5 +319,36 @@ class main
                                                              $project_deadline);
     $this->projects_helper->sync_topic_title($topic_id, $topic_title);
     redirect(append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", "f=$forum_id&amp;t=$topic_id"));
+  }
+
+  private function release_project($topic_id)
+  {
+    // Grab forum id for redirect.
+    $sql = 'SELECT forum_id
+            FROM ' . TOPICS_TABLE . '
+            WHERE topic_id = ' . $topic_id;
+    $result = $this->db->sql_query($sql);
+    $row    = $this->db->sql_fetchrow($result);
+    $this->db->sql_freeresult($result);
+    $forum_id = $row['forum_id'];
+
+    // Does the user have permission to release this project?
+    if (!$this->auth->acl_get('m_prj_release_project'))
+      return redirect(append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", "f=$forum_id&amp;t=$topic_id"));
+
+    // Is this topic in the projects forum?
+    if (!$this->projects_helper->is_valid_forum($forum_id))
+      return redirect(append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", "f=$forum_id&amp;t=$topic_id"));
+
+    // Is this project on the last stage?
+    if (!$this->projects_helper->is_last_stage($topic_id))
+      return redirect(append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", "f=$forum_id&amp;t=$topic_id"));
+
+    // If no releases forum, don't do anything.
+    $releases_forum_id = $this->config['prj_releases_forum_id'];
+    if ($releases_forum_id === '0')
+      return redirect(append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", "f=$forum_id&amp;t=$topic_id"));
+
+    return redirect(append_sid("{$this->phpbb_root_path}posting.$this->phpEx", "mode=post&amp;f=$releases_forum_id&amp;prj_topic_id=$topic_id"));
   }
 }

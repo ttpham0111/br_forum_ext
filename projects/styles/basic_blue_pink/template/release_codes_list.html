@@ -1,0 +1,10 @@
+<dl>
+  <dt><label for="prj_release_codes">{L_PRJ_RELEASE_CODES_LIST}{L_COLON}</label></dt>
+  <dd>
+    <select name="prj_release_code">
+      <!-- BEGIN prj_release_codes -->
+      <option value="{prj_release_codes.CODE_ID}"<!-- IF prj_release_codes.SELECTED --> selected<!-- ENDIF -->>{prj_release_codes.CODE_TEXT}</option>
+      <!-- END prj_release_codes -->
+    </select>
+  </dd>
+</dl>

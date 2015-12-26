@@ -1,16 +1,19 @@
 .prj-stages-header {
   width: auto;
+  position: relative;
+  margin: 0 auto;
+  display: table;
+}
+.prj-stages-inner {
   height: 27px;
   border: solid #E4E4E4;
   border-width: 1px 1px 0 1px;
-  display: table;
-  margin: 0 auto;
 }
-.prj-stages-header > ul {
+.prj-stages-inner > ul {
   list-style: none;
   margin: 0 15px;
 }
-.prj-stages-header > ul > li {
+.prj-stages-inner > ul > li {
   display: inline-block;
   padding: 0 10px;
   color: #a4a4a4;
@@ -18,6 +21,9 @@
   font-weight: bold;
   text-align: center;
   vertical-align: middle;
+}
+.prj-stages-inner > ul > li:hover > div > div {
+  display: block;
 }
 .prj-current-stage {
   color: #000 !important;
@@ -34,10 +40,23 @@
 }
 .prj-deadline-date {
   font-size: 10px;
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  display: none;
+  white-space: nowrap;
 }
 .prj-divider {
   padding: 0 !important;
-  height: 25px;
+  height: 27px;
   border: solid #E4E4E4;
   border-width: 0 0 0 1px;
+}
+.prj-date-box {
+  width: 100%;
+  height: 20px;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, 0);
 }

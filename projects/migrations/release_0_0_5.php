@@ -12,9 +12,9 @@
 
 namespace ttpham\projects\migrations;
 
-class release_0_0_2 extends \phpbb\db\migration\migration
+class release_0_0_5 extends \phpbb\db\migration\migration
 {
-  private $version = '0.0.2';
+  private $version = '0.0.5';
 
   public function effectively_installed()
   {
@@ -25,7 +25,7 @@ class release_0_0_2 extends \phpbb\db\migration\migration
   public static function depends_on()
   {
     return array(
-      '\ttpham\projects\migrations\release_0_0_1'
+      '\ttpham\projects\migrations\release_0_0_4'
     );
   }
 
@@ -33,13 +33,19 @@ class release_0_0_2 extends \phpbb\db\migration\migration
   {
     return array(
       array('config.update', array('projects_version', $this->version)),
+      
+      array('config.add', array('prj_projects_table_size', 0)),
+      array('config.add', array('prj_releases_table_ratio', 2.0)),
+      array('config.remove', array('prj_allow_projects_form'))
+    );
+  }
 
-      array('module.add', array(
-        'acp', 'ACP_PROJECTS', array(
-          'module_basename' => '\ttpham\projects\acp\projects_module',
-          'modes'           => array('manage_projects')
-        )
-      ))
+  public function revert_data()
+  {
+    return array(
+      array('config.remove', array('prj_projects_table_size')),
+      array('config.remove', array('prj_releases_table_ratio')),
+      array('config.add', array('prj_allow_projects_form', true))
     );
   }
 }

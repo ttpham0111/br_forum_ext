@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<h1>{L_PRJ_SETTINGS}</h1>
+<h1>{L_ACP_PROJECTS_SETTINGS_TITLE}</h1>
 
 <form id="acp_board" method="post" action="{U_ACTION}">
   <fieldset>
@@ -26,6 +26,41 @@
       </dt>
       <dd><input type="number" name="prj_number_of_releases_to_display" size="3" min="0" max="999" value="{PRJ_NUMBER_OF_RELEASES_TO_DISPLAY}" /></dd>
     </dl>
+    <dl>
+      <dt>
+        <label for="prj_move_after_release">{L_PRJ_MOVE_AFTER_RELEASE}{L_COLON}</label><br />
+        <span>{L_PRJ_MOVE_AFTER_RELEASE_EXP}</span>
+      </dt>
+      <dd>
+        <label>
+          <input type="radio" class="radio" name="prj_move_after_release" value="1"<!-- IF PRJ_MOVE_AFTER_RELEASE --> checked="checked"<!-- ENDIF --> /> {L_YES}
+        </label>
+        <label>
+          <input type="radio" class="radio" name="prj_move_after_release" value="0"<!-- IF not PRJ_MOVE_AFTER_RELEASE --> checked="checked"<!-- ENDIF --> /> {L_NO}
+        </label>
+      </dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="prj_move_lock_topics">{L_PRJ_MOVE_LOCK_TOPICS}{L_COLON}</label><br />
+        <span>{L_PRJ_MOVE_LOCK_TOPICS_EXP}</span>
+      </dt>
+      <dd>
+        <label>
+          <input type="radio" class="radio" name="prj_move_lock_topics" value="1"<!-- IF PRJ_MOVE_LOCK_TOPICS --> checked="checked"<!-- ENDIF --> /> {L_YES}
+        </label>
+        <label>
+          <input type="radio" class="radio" name="prj_move_lock_topics" value="0"<!-- IF not PRJ_MOVE_LOCK_TOPICS --> checked="checked"<!-- ENDIF --> /> {L_NO}
+        </label>
+      </dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="prj_move_rules">{L_PRJ_MOVE_RULES}{L_COLON}</label><br /><span>{L_PRJ_MOVE_RULES_EXP}</span>
+      </dt>
+      <dd><input type="text" name="prj_move_rules" value="{PRJ_MOVE_RULES}" /></dd>
+    </dl>
+    <dl>
   </fieldset>
   <fieldset>
     <dl>
@@ -48,10 +83,31 @@
       </dt>
       <dd><input type="number" name="prj_days_threshold" size="3" min="0" max="999" value="{PRJ_DAYS_THRESHOLD}" /></dd>
     </dl>
+  </fieldset>
+  <fieldset>
     <dl>
-      <dt><label for="prj_allow_projects_form">{L_PRJ_ALLOW_PROJECTS_FORM}{L_COLON}</label><br /><span>{L_PRJ_ALLOW_PROJECTS_FORM_EXP}</span></dt>
-      <dd><input type="radio" class="radio" name="prj_allow_projects_form" value="1" <!-- IF PRJ_ALLOW_PROJECTS_FORM -->checked="checked"<!-- ENDIF -->/> {L_YES} &nbsp;
-      <input type="radio" class="radio" name="prj_allow_projects_form" value="0" <!-- IF not PRJ_ALLOW_PROJECTS_FORM -->checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+      <dt>
+        <label for="prj_prune_releases_gc">
+        {L_PRJ_PRUNE_RELEASES_GC}{L_COLON}</label><br />
+        <span>{L_PRJ_PRUNE_RELEASES_GC_EXP}</span>
+      </dt>
+      <dd><input type="number" name="prj_prune_releases_gc" size="3" min="0" max="999" value="{PRJ_PRUNE_RELEASES_GC}" /></dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="prj_releases_table_ratio">
+        {L_PRJ_RELEASES_TABLE_RATIO}{L_COLON}</label><br />
+        <span>{L_PRJ_RELEASES_TABLE_RATIO_EXP}</span>
+      </dt>
+      <dd><input type="number" name="prj_releases_table_ratio" size="3" min="0" max="999" value="{PRJ_RELEASES_TABLE_RATIO}" /></dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="prj_prune_projects_gc">
+        {L_PRJ_PRUNE_PROJECTS_GC}{L_COLON}</label><br />
+        <span>{L_PRJ_PRUNE_PROJECTS_GC_EXP}</span>
+      </dt>
+      <dd><input type="number" name="prj_prune_projects_gc" size="3" min="0" max="999" value="{PRJ_PRUNE_PROJECTS_GC}" /></dd>
     </dl>
   </fieldset>
   <fieldset style="background-color: salmon">
@@ -66,6 +122,20 @@
         </label>
         <label>
           <input type="radio" class="radio" name="prj_reset_database" value="0"<!-- IF not PRJ_RESET_DATABASE --> checked="checked"<!-- ENDIF --> /> {L_NO}
+        </label>
+      </dd>
+    </dl>
+    <dl>
+      <dt>
+        <label for="prj_prune_database">{L_PRJ_PRUNE_DATABASE}{L_COLON}</label><br />
+        <span>{L_PRJ_PRUNE_DATABASE_EXP}</span>
+      </dt>
+      <dd>
+        <label>
+          <input type="radio" class="radio" name="prj_prune_database" value="1"<!-- IF PRJ_PRUNE_DATABASE --> checked="checked"<!-- ENDIF --> /> {L_YES}
+        </label>
+        <label>
+          <input type="radio" class="radio" name="prj_prune_database" value="0"<!-- IF not PRJ_PRUNE_DATABASE --> checked="checked"<!-- ENDIF --> /> {L_NO}
         </label>
       </dd>
     </dl>

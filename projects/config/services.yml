@@ -6,11 +6,15 @@ services:
       - @config
       - @dbal.conn
       - @controller.helper
+      - @mimetype.guesser
+      - @plupload
       - @request
       - @template
       - @user
       - @ttpham.projects.projects_helper
       - @ttpham.projects.controller
+      - %core.php_ext%
+      - %core.root_path%
       - %core.table_prefix%
     tags:
       - { name: event.listener }
@@ -21,12 +25,23 @@ services:
       - @auth
       - @config
       - @dbal.conn
+      - @request
       - @template
       - @user
       - @ttpham.projects.projects_helper
       - %core.php_ext%
       - %core.root_path%
       - %core.table_prefix%
+
+  ttpham.projects.cron.task.prune_projects:
+    class: ttpham\projects\cron\task\prune_projects
+    arguments:
+      - @config
+      - @ttpham.projects.projects_helper
+    calls:
+      - [set_name, [cron.task.prune_projects]]
+    tags:
+      - { name: prune.projects }
 
   ttpham.projects.projects_helper:
     class: ttpham\projects\services\projects_helper

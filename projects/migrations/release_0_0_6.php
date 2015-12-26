@@ -12,9 +12,9 @@
 
 namespace ttpham\projects\migrations;
 
-class release_0_0_2 extends \phpbb\db\migration\migration
+class release_0_0_6 extends \phpbb\db\migration\migration
 {
-  private $version = '0.0.2';
+  private $version = '0.0.6';
 
   public function effectively_installed()
   {
@@ -25,7 +25,18 @@ class release_0_0_2 extends \phpbb\db\migration\migration
   public static function depends_on()
   {
     return array(
-      '\ttpham\projects\migrations\release_0_0_1'
+      '\ttpham\projects\migrations\release_0_0_5'
+    );
+  }
+
+  public function update_schema()
+  {
+    return array(
+      'add_columns' => array(
+        $this->table_prefix . 'prj_statuses' => array(
+          'primary_status' => array('BOOL', 0)
+        )
+      )
     );
   }
 
@@ -33,13 +44,17 @@ class release_0_0_2 extends \phpbb\db\migration\migration
   {
     return array(
       array('config.update', array('projects_version', $this->version)),
+    );
+  }
 
-      array('module.add', array(
-        'acp', 'ACP_PROJECTS', array(
-          'module_basename' => '\ttpham\projects\acp\projects_module',
-          'modes'           => array('manage_projects')
+  public function revert_schema()
+  {
+    return array(
+      'drop_columns' => array(
+        $this->table_prefix . 'prj_statuses' => array(
+          'primary_status'
         )
-      ))
+      )
     );
   }
 }
