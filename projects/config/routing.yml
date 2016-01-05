@@ -1,4 +1,4 @@
 projects_stage_up_controller:
   pattern: /projects/stageup/{topic_id}
   defaults: { _controller: ttpham.projects.controller:stageup }
-  methods: [GET]
+  methods: [GET, POST]

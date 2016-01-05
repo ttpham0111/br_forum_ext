@@ -1,5 +1,6 @@
 .prj-acp-header {
   margin-bottom: 7px;
+  white-space: nowrap;
 }
 .prj-acp-header > li {
   border-bottom: 1px solid #bbb;
@@ -24,13 +25,21 @@
   width: 20%;
   text-align: center;
 }
-.prj-acp-statuses > dl > dt, .prj-acp-release-codes > dl > dt {
-  text-align: right;
-}
 .prj-acp-header > li > dl > dt {
   text-align: center;
 }
 .prj-acp-info {
   margin-bottom: 7px;
   width: 75%;
+}
+.prj-acp-statuses > dl > dt,
+.prj-acp-release-codes > dl > dt,
+.prj-acp-move-rules > dl > dt {
+  text-align: right;
+}
+.prj-acp-move-rules > dl > dd > div {
+  text-align: left !important;
+}
+.prj-acp-move-rules select {
+  white-space: nowrap;
 }

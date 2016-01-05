@@ -20,11 +20,17 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
+  'M_PRJ_STAGEUP'          => 'Can move project stage forward and release project.',
+  'M_PRJ_RELEASE_PROJECT'  => 'Can release projects in this forum.',
+  'M_PRJ_FINISHED_PROJECT' => 'Can move finished projects to this forum.',
+  'F_PRJ_PROJECTS'         => 'Can host projects in this forum.',
+
   'RELEASES_TABLE'         => 'New Releases',
   'NEW_PROJECTS_TABLE'     => 'New Projects',
   'ONGOING_PROJECTS_TABLE' => 'Ongoing Projects',
 
-  'PRJ_RELEASE_PROJECT' => 'Release project',
+  'PRJ_RELEASE_PROJECT' => 'Release the project',
+  'PRJ_REQUEST_RELEASE' => 'Send a request to release the project',
   'PRJ_STAGEUP'         => 'Change status to',
   
   'PRJ_FORM_DEADLINES'    => 'Deadlines',
@@ -32,5 +38,7 @@ $lang = array_merge($lang, array(
 
   'PRJ_STAGES_DEADLINE_CONNECT' => 'deadline is on',
 
-  'PRJ_RELEASE_CODES_LIST' => 'Release Code'
+  'PRJ_RELEASE_CODES_LIST' => 'Release Code',
+
+  'PRJ_CONFIRM' => 'Are you sure you want to'
 ));

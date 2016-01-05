@@ -12,7 +12,7 @@
 
 namespace ttpham\projects\acp;
 
-class projects_module
+class acp_projects_module
 {
   /** @var string */
   public $u_action;
@@ -35,14 +35,14 @@ class projects_module
     switch ($mode)
     {
       case 'manage_projects':
-        $this->tpl_name = 'acp_manage_projects';
+        $this->tpl_name   = 'acp_manage_projects';
         $this->page_title = $user->lang('ACP_MANAGE_PROJECTS');
         $this->manage_projects();
         break;
       case 'settings':
-      // no break
+      // no break.
       default:
-        $this->tpl_name = 'acp_projects';
+        $this->tpl_name   = 'acp_projects';
         $this->page_title = $user->lang('ACP_PROJECTS_SETTINGS');
         $this->handle_settings();
     }
@@ -50,7 +50,7 @@ class projects_module
 
   private function manage_projects()
   {
-    global $config, $request, $template, $user;
+    global $request, $template, $user;
 
     $form_name = 'acp_manage_projects';
     add_form_key($form_name);
@@ -60,9 +60,16 @@ class projects_module
     if ($request->is_set_post('submit'))
     {
       if (!check_form_key($form_name))
-      {
         trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
-      }
+
+      /**
+      * Handle move rule actions.
+      */
+
+      // Change existing move rules.
+      $move_to_array = $request->variable('prj_acp_move_to_array', array(''));
+      if (sizeof($move_to_array))
+        $this->projects_helper->set_move_rules($move_to_array);
 
       /**
       * Handle status actions.
@@ -72,7 +79,7 @@ class projects_module
       $primary_statuses   = $request->variable('prj_primary_status_ids', array(''));
       $statuses_to_delete = $request->variable('prj_delete_status_ids', array(''));
 
-      if (sizeof($primary_statuses) !== 0)
+      if (sizeof($primary_statuses))
         $this->projects_helper->set_primary_statuses($primary_statuses);
 
       foreach ($statuses_to_delete as $status_id)
@@ -89,7 +96,7 @@ class projects_module
         $new_status = $new_statuses[$i];
         $is_primary = (in_array($i, $primary_ary));
 
-        if ($new_status !== '')
+        if ($new_status !== '' && strlen($new_status) <= 25)
           $this->projects_helper->add_new_status($new_status, $is_primary);
       }
 
@@ -114,19 +121,57 @@ class projects_module
         $this->projects_helper->delete_release_code($code_id);
 
       // Add new release codes.
-      $new_release_codes       = $request->variable('prj_new_release_codes', array(''));
-      $indexes                 = $request->variable('prj_new_code_indexes', array(''));
+      $new_release_codes = $request->variable('prj_new_release_codes', array(''));
+      $indexes           = $request->variable('prj_new_code_indexes', array(''));
       for ($i = 0; $i < sizeof($new_release_codes); ++$i)
       {
         $new_release_code = $new_release_codes[$i];
         $index            = $indexes[$i];
 
-        if ($new_release_code !== '')
+        if ($new_release_code !== '' && strlen($new_release_code) <= 10)
           $this->projects_helper->add_new_release_code($new_release_code, $index);
       }
 
       trigger_error($user->lang('ACP_MANAGE_PROJECTS_SAVED') . adm_back_link($this->u_action));
     }
+
+    // Show move rules.
+    $tpl_loop_rules  = 'prj_acp_move_rules';
+    $move_rules      = $this->projects_helper->get_move_rules();
+    $projects_forums = $this->projects_helper->get_projects_forums();
+    foreach ($projects_forums as $move_from)
+    {
+      $move_to = $move_rules[$move_from['forum_id']];
+      $tpl_ary = array(
+        'MOVE_FROM_NAME' => $move_from['forum_name']
+      );
+      $template->assign_block_vars($tpl_loop_rules, $tpl_ary);
+      
+      $tpl_loopname = 'releases';
+      $releases_forums = $this->projects_helper->get_releases_forums();
+      foreach ($releases_forums as $forum)
+      {
+        $tpl_ary = array(
+          'FORUM_ID'   => $forum['forum_id'],
+          'FORUM_NAME' => $forum['forum_name'],
+          'SELECTED'   => $forum['forum_id'] === $move_to[0]['forum_id']
+        );
+        $template->assign_block_vars($tpl_loop_rules . '.' . $tpl_loopname, $tpl_ary);
+      }
+
+      $tpl_loopname = 'finished';
+      $finished_forums = $this->projects_helper->get_finished_forums();
+      foreach ($finished_forums as $forum)
+      {
+        $tpl_ary = array(
+          'FORUM_ID'   => $forum['forum_id'],
+          'FORUM_NAME' => $forum['forum_name'],
+          'SELECTED'   => $forum['forum_id'] === $move_to[1]['forum_id']
+        );
+        $template->assign_block_vars($tpl_loop_rules . '.' . $tpl_loopname, $tpl_ary);
+      }
+    }
+
 
     // Show statuses.
     $tpl_loopname = 'prj_acp_statuses';
@@ -175,12 +220,10 @@ class projects_module
         trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 
       $default_table_size   = $request->variable('prj_default_table_size', 0);
-      $releases_id          = $request->variable('prj_releases_forum_id', 0);
+      $allow_guest_view     = $request->variable('prj_projects_table_guest', false);
       $num_releases         = $request->variable('prj_number_of_releases_to_display', 0);
       $move_after_release   = $request->variable('prj_move_after_release', false);
       $move_lock_topics     = $request->variable('prj_move_lock_topics', false);
-      $move_rules           = $request->variable('prj_move_rules', '');
-      $project_ids          = $request->variable('prj_project_forum_ids', '');
       $num_projects         = $request->variable('prj_number_of_projects_to_display', 0);
       $days_threshold       = $request->variable('prj_days_threshold', 0);
       $prune_releases_gc    = $request->variable('prj_prune_releases_gc', 7);
@@ -188,12 +231,10 @@ class projects_module
       $prune_projects_gc    = $request->variable('prj_prune_projects_gc', 7);
 
       $config->set('prj_default_table_size', $default_table_size);
-      $config->set('prj_releases_forum_id', $releases_id);
+      $config->set('prj_projects_table_guest', $allow_guest_view);
       $config->set('prj_number_of_releases_to_display', $num_releases);
       $config->set('prj_move_after_release', $move_after_release);
       $config->set('prj_move_lock_topics', $move_lock_topics);
-      $config->set('prj_move_rules', $move_rules);
-      $config->set('prj_project_forum_ids', $project_ids);
       $config->set('prj_number_of_projects_to_display', $num_projects);
       $config->set('prj_days_threshold', $days_threshold);
       $config->set('prj_prune_releases_gc', ($prune_releases_gc * 24 * 60 * 60));
@@ -211,15 +252,13 @@ class projects_module
     $template->assign_vars(array(
       'U_ACTION' => $this->u_action,
 
-      'PRJ_DEFAULT_TABLE_SIZE' => (isset($config['prj_default_table_size'])) ? $config['prj_default_table_size'] : 0,
+      'PRJ_DEFAULT_TABLE_SIZE'   => (isset($config['prj_default_table_size'])) ? $config['prj_default_table_size'] : 0,
+      'PRJ_PROJECTS_TABLE_GUEST' => (isset($config['prj_projects_table_guest'])) ? $config['prj_projects_table_guest'] : false,
 
-      'PRJ_RELEASES_FORUM_ID'             => (isset($config['prj_releases_forum_id'])) ? $config['prj_releases_forum_id'] : 0,
       'PRJ_NUMBER_OF_RELEASES_TO_DISPLAY' => (isset($config['prj_number_of_releases_to_display'])) ? $config['prj_number_of_releases_to_display'] : 0,
       'PRJ_MOVE_AFTER_RELEASE'            => (isset($config['prj_move_after_release'])) ? $config['prj_move_after_release'] : false,
       'PRJ_MOVE_LOCK_TOPICS'              => (isset($config['prj_move_lock_topics'])) ? $config['prj_move_lock_topics'] : false,
-      'PRJ_MOVE_RULES'                    => (isset($config['prj_move_rules'])) ? $config['prj_move_rules'] : '',
       
-      'PRJ_PROJECT_FORUM_IDS'             => (isset($config['prj_project_forum_ids'])) ? $config['prj_project_forum_ids'] : '',
       'PRJ_NUMBER_OF_PROJECTS_TO_DISPLAY' => (isset($config['prj_number_of_projects_to_display'])) ? $config['prj_number_of_projects_to_display'] : 0,
       'PRJ_DAYS_THRESHOLD'                => (isset($config['prj_days_threshold'])) ? $config['prj_days_threshold'] : 0,
 
@@ -229,6 +268,39 @@ class projects_module
 
       'PRJ_RESET_DATABASE' => false
     ));
+
+    // Show releases forums.
+    $tpl_loopname    = 'prj_acp_releases_forums';
+    $releases_forums = $this->projects_helper->get_releases_forums();
+    foreach ($releases_forums as $forum)
+    {
+      $tpl_ary = array(
+        'FORUM_NAME' => $forum['forum_name']
+      );
+      $template->assign_block_vars($tpl_loopname, $tpl_ary);
+    }
+
+    // Show finished forums.
+    $tpl_loopname    = 'prj_acp_finished_forums';
+    $finished_forums = $this->projects_helper->get_finished_forums();
+    foreach ($finished_forums as $forum)
+    {
+      $tpl_ary = array(
+        'FORUM_NAME' => $forum['forum_name']
+      );
+      $template->assign_block_vars($tpl_loopname, $tpl_ary);
+    }
+
+    // Show projects forums.
+    $tpl_loopname    = 'prj_acp_projects_forums';
+    $projects_forums = $this->projects_helper->get_projects_forums();
+    foreach ($projects_forums as $forum)
+    {
+      $tpl_ary = array(
+        'FORUM_NAME' => $forum['forum_name']
+      );
+      $template->assign_block_vars($tpl_loopname, $tpl_ary);
+    }
   }
 
   /**

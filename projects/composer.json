@@ -3,7 +3,7 @@
    "type": "phpbb-extension",
    "description": "Project Table extension written for breaking-records.com",
    "homepage": "https://github.com/tuan91187dsf/br_forum_ext/projects",
-   "version": "0.0.8",
+   "version": "0.1.0",
    "time": "2015-10-12",
    "license": "GPL-2.0",
    "authors": [
@@ -21,7 +21,7 @@
    "extra": {
       "display-name": "Projects",
       "soft-require" : {
-         "phpbb/phpbb": ">=3.1.0-RC2,<3.2.*@dev"
+         "phpbb/phpbb": ">=3.1.3"
       }
    }
 }

@@ -27,11 +27,21 @@ $lang = array_merge($lang, array(
   'ACP_PROJECTS_SETTINGS_TITLE' => 'Projects Settings',
   'ACP_PROJECTS_SETTINGS_SAVED' => 'Projects Settings Saved.',
 
-  'PRJ_DEFAULT_TABLE_SIZE'     => 'Default table size',
-  'PRJ_DEFAULT_TABLE_SIZE_EXP' => 'The table will never be smaller than this size.',
+  'PRJ_DEFAULT_TABLE_SIZE'       => 'Default table size',
+  'PRJ_DEFAULT_TABLE_SIZE_EXP'   => 'The table will never be smaller than this size.',
+  'PRJ_PROJECTS_TABLE_GUEST'     => 'Projects table visible to guest',
+  'PRJ_PROJECTS_TABLE_GUEST_EXP' => 'Enable to allow guest to see ongoing and
+                                     released projects on the index page. Note:
+                                     The guest will see an empty table if
+                                     disabled. Users without permissions to
+                                     host projects/release projects will not
+                                     see projects in those forums where they do
+                                     not have permission.',
 
-  'PRJ_RELEASES_FORUM_ID'                 => 'Releases Forum ID',
-  'PRJ_RELEASES_FORUM_ID_EXP'             => 'Enter the id of the releases forum.',
+  'PRJ_RELEASES_FORUMS'                   => 'Releases Forums (read only)',
+  'PRJ_RELEASES_FORUMS_EXP'               => 'List of forums that projects are released into. This
+                                              list is derived from forums where moderators
+                                              are allowed to post a new release.',
   'PRJ_NUMBER_OF_RELEASES_TO_DISPLAY'     => 'Number of Releases',
   'PRJ_NUMBER_OF_RELEASES_TO_DISPLAY_EXP' => 'Enter the number of releases to display
                                               (Enter 0 to display as many as the projects table).',
@@ -40,13 +50,15 @@ $lang = array_merge($lang, array(
   'PRJ_MOVE_LOCK_TOPICS'                  => 'Lock after move',
   'PRJ_MOVE_LOCK_TOPICS_EXP'              => 'Enable to lock the project after moving it to the
                                               specified forum.',
-  'PRJ_MOVE_RULES'                        => 'Move rules',
-  'PRJ_MOVE_RULES_EXP'                    => 'Enter the rules for moving the projects.
-                                              Format: forum_ids|forum_ids to forum_id,forum_id
-                                              (eg. "27,29,31|37,39,41,46 to 33,43").',
+  'PRJ_FINISHED_FORUMS'                   => 'Finished Projects Forums (read only)',
+  'PRJ_FINISHED_FORUMS_EXP'               => 'List of forums for finished projects. This list is
+                                              derived from forums where moderators can move
+                                              finished projects into.',
 
-  'PRJ_PROJECT_FORUM_IDS'                 => 'Project Forum IDs',
-  'PRJ_PROJECT_FORUM_IDS_EXP'             => 'Enter the ids of the project forums (ex. 13,42,10).',
+  'PRJ_PROJECTS_FORUMS'                    => 'Projects Forums (read only)',
+  'PRJ_PROJECTS_FORUMS_EXP'                => 'List of forums where projects can be hosted. This
+                                               list is derived from forums where users can host
+                                               projects.',
   'PRJ_NUMBER_OF_PROJECTS_TO_DISPLAY'     => 'Number of Projects',
   'PRJ_NUMBER_OF_PROJECTS_TO_DISPLAY_EXP' => 'Enter the number of projects to display
                                               (Enter 0 to display all ongoing projects.',
@@ -81,8 +93,18 @@ $lang = array_merge($lang, array(
   'ACP_MANAGE_PROJECTS_TITLE' => 'Manage Projects Database',
   'ACP_MANAGE_PROJECTS_SAVED' => 'Projects Settings Saved.',
 
+  'PRJ_MOVE_RULES_LIST' => 'Move Rules',
+  'PRJ_MOVE_RULES_EXP'  => 'Make changes to the move rules here.
+                            These move rules determine where a project
+                            will be moved to after it is released, and which
+                            release forum it will be released to.',
+
+  'PRJ_MOVE_FROM'        => 'Projects Forums',
+  'PRJ_MOVE_TO_RELEASES' => 'Releases Forums',
+  'PRJ_MOVE_TO_FINISHED' => 'Finished Projects Forums',
+
   'PRJ_STATUSES_LIST' => 'Statuses',
-  'PRJ_STATUSES_INFO' => 'Make changes to statuses in the database
+  'PRJ_STATUSES_EXP'  => 'Make changes to statuses in the database
                           here. All primary statuses will be suggested
                           to the user when creating new projects.
                           You may only delete statuses that are not
@@ -97,7 +119,7 @@ $lang = array_merge($lang, array(
   'PRJ_ADD_STATUS'    => '(+) Click to add a new status.',
 
   'PRJ_RELEASE_CODES_LIST' => 'Release Codes',
-  'PRJ_RELEASE_CODES_INFO' => 'Make changes to the release codes in the
+  'PRJ_RELEASE_CODES_EXP'  => 'Make changes to the release codes in the
                                database here. The index is the current
                                number of releases using that release
                                code.',

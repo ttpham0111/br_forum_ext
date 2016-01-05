@@ -12,23 +12,23 @@
 
 namespace ttpham\projects\acp;
 
-class projects_info
+class acp_projects_info
 {
 	function module()
 	{
 		return array(
-      'filename' => '\ttpham\projects\acp\projects_module',
-      'title'    => 'PROJECT',
+      'filename' => '\ttpham\projects\acp\acp_projects_module',
+      'title'    => 'ACP_PROJECTS',
       'modes'    => array(
         'settings' => array(
           'title'  => 'ACP_PROJECTS_SETTINGS',
           'auth'   => 'ext_ttpham/projects && acl_a_board',
-          'cat'    => array('PROJECTS')
+          'cat'    => array('ACP_PROJECTS')
         ),
         'manage_projects' => array(
           'title' => 'ACP_MANAGE_PROJECTS',
           'auth'  => 'ext_ttpham/projects && acl_a_board',
-          'cat'   => array('PROJECTS')
+          'cat'   => array('ACP_PROJECTS')
         )
       )
 		);

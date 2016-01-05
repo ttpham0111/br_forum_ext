@@ -11,13 +11,34 @@
       </dt>
       <dd><input type="number" name="prj_default_table_size" size="3" min="0" max="999" value="{PRJ_DEFAULT_TABLE_SIZE}" /></dd>
     </dl>
+    <dl>
+      <dt>
+        <label for="prj_projects_table_guest">{L_PRJ_PROJECTS_TABLE_GUEST}{L_COLON}</label><br />
+        <span>{L_PRJ_PROJECTS_TABLE_GUEST_EXP}</span>
+      </dt>
+      <dd>
+        <label>
+          <input type="radio" class="radio" name="prj_projects_table_guest" value="1"<!-- IF PRJ_PROJECTS_TABLE_GUEST --> checked="checked"<!-- ENDIF --> /> {L_YES}
+        </label>
+        <label>
+          <input type="radio" class="radio" name="prj_projects_table_guest" value="0"<!-- IF not PRJ_PROJECTS_TABLE_GUEST --> checked="checked"<!-- ENDIF --> /> {L_NO}
+        </label>
+      </dd>
+    </dl>
   </fieldset>
   <fieldset>
     <dl>
       <dt>
-        <label for="prj_releases_forum_id">{L_PRJ_RELEASES_FORUM_ID}{L_COLON}</label><br /><span>{L_PRJ_RELEASES_FORUM_ID_EXP}</span>
+        <label for="prj_releases_forums">{L_PRJ_RELEASES_FORUMS}{L_COLON}</label><br />
+        <span>{L_PRJ_RELEASES_FORUMS_EXP}</span>
       </dt>
-      <dd><input type="number" name="prj_releases_forum_id" size="3" min="0" max="999" value="{PRJ_RELEASES_FORUM_ID}" /></dd>
+      <dd>
+        <select>
+          <!-- BEGIN prj_acp_releases_forums -->
+            <option>{prj_acp_releases_forums.FORUM_NAME}</option>
+          <!-- END prj_acp_releases_forums -->
+        </select>
+      </dd>
     </dl>
     <dl>
       <dt>
@@ -56,18 +77,31 @@
     </dl>
     <dl>
       <dt>
-        <label for="prj_move_rules">{L_PRJ_MOVE_RULES}{L_COLON}</label><br /><span>{L_PRJ_MOVE_RULES_EXP}</span>
+        <label for="prj_finished_forums">{L_PRJ_FINISHED_FORUMS}{L_COLON}</label><br />
+        <span>{L_PRJ_FINISHED_FORUMS_EXP}</span>
       </dt>
-      <dd><input type="text" name="prj_move_rules" value="{PRJ_MOVE_RULES}" /></dd>
+      <dd>
+        <select>
+          <!-- BEGIN prj_acp_finished_forums -->
+            <option>{prj_acp_finished_forums.FORUM_NAME}</option>
+          <!-- END prj_acp_finished_forums -->
+        </select>
+      </dd>
     </dl>
-    <dl>
   </fieldset>
   <fieldset>
     <dl>
       <dt>
-        <label for="prj_project_forum_ids">{L_PRJ_PROJECT_FORUM_IDS}{L_COLON}</label><br /><span>{L_PRJ_PROJECT_FORUM_IDS_EXP}</span>
+        <label for="prj_projects_forums">{L_PRJ_PROJECTS_FORUMS}{L_COLON}</label><br />
+        <span>{L_PRJ_PROJECTS_FORUMS_EXP}</span>
       </dt>
-      <dd><input type="text" name="prj_project_forum_ids" value="{PRJ_PROJECT_FORUM_IDS}" /></dd>
+      <dd>
+        <select>
+          <!-- BEGIN prj_acp_projects_forums -->
+            <option>{prj_acp_projects_forums.FORUM_NAME}</option>
+          <!-- END prj_acp_projects_forums -->
+        </select>
+      </dd>
     </dl>
     <dl>
       <dt>

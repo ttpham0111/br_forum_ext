@@ -12,7 +12,7 @@
 
 namespace ttpham\projects\cron\task;
 
-class prune_projects extends \phpbb\cron\task\base
+class prune_releases extends \phpbb\cron\task\base
 {
   /* @var \phpbb\config\config */
   private $config;

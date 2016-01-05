@@ -1,0 +1,48 @@
+<!-- INCLUDE mcp_header.html -->
+
+<h2>{L_PRJ_MCP_RELEASE_REQUESTS}</h2>
+
+<div class="panel">
+  <div class="inner">
+
+  <p>{L_PRJ_MCP_RELEASE_REQUESTS_EXP}</p>
+
+  <!-- IF .postrow -->
+    <ul class="topiclist missing-column">
+      <li class="header">
+        <dl>
+          <dt><div class="list-inner">{L_PRJ_MCP_PROJECTS}</div></dt>
+          <dd class="moderation"><span>{L_FORUM}</span></dd>
+          <dd class="prj-mcp-release">{L_PRJ_MCP_RELEASE_HEADER}</dd>
+        </dl>
+      </li>
+    </ul>
+    <ul class="topiclist cplist missing-column responsive-show-all">
+
+      <!-- BEGIN postrow -->
+        <li class="row<!-- IF postrow.S_ROW_COUNT is odd --> bg1<1-- ELSE --> bg2<!-- ENDIF -->">
+          <dl>
+            <dt>
+              <div class="list-inner">
+                <a href="{postrow.U_VIEWTOPIC}" class="topictitle">{postrow.PROJECT_TITLE}</a> <br />
+                <span>{L_PRJ_MCP_SENT_BY} {postrow.PROJECT_HOST} {L_PRJ_MCP_REQUEST_SENT_AT} {postrow.REQUEST_TIME}</span>
+              </div>
+            </dt>
+            <dd class="moderation">
+              <span>{L_FORUM}{L_COLON} 
+                <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a>
+              </span>
+            </dd>
+            <dd class="prj-mcp-release">
+              <a href="{postrow.U_STAGEUP}">{L_PRJ_MCP_RELEASE}</a>
+            </dd>
+          </dl>
+        </li>
+      <!-- END postrow -->
+    </ul>
+  <!-- ELSE -->
+    <p class="notopics"><strong>{L_PRJ_MCP_NO_TOPICS}</strong></p>
+  <!-- ENDIF -->      
+</div>
+
+<!-- INCLUDE mcp_footer.html -->

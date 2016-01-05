@@ -5,9 +5,63 @@
 <form id="acp_board" method="post" action="{U_ACTION}">
   <fieldset>
     <div class="prj-acp-form">
+      <div class="prj-acp-info">
+        <h2>{L_PRJ_MOVE_RULES_LIST}</h2>
+        {L_PRJ_MOVE_RULES_EXP}
+      </div>
+      <ul class="prj-acp-header">
+        <li>
+          <dl>
+            <dt>
+              <div>{L_PRJ_MOVE_FROM}</div>
+            </dt>
+            <dd>
+              <div>{L_PRJ_MOVE_TO_RELEASES}</div>
+              <div></div>
+              <div>{L_PRJ_MOVE_TO_FINISHED}</div>
+            </dd>
+          </dl>
+        </li>
+      </ul>
+      <ul class='prj-acp-move-rule-list'>
+        <!-- BEGIN prj_acp_move_rules -->
+          <li class="prj-acp-move-rules">
+            <dl>
+              <dt>
+                <div>{prj_acp_move_rules.MOVE_FROM_NAME}</div>
+              </dt>
+              <dd>
+                <div>
+                  <select name="prj_acp_move_to_array[]">
+                    <!-- BEGIN releases -->
+                      <option value="{prj_acp_move_rules.releases.FORUM_ID}"<!-- IF prj_acp_move_rules.releases.SELECTED --> selected<!-- ENDIF -->>
+                        {prj_acp_move_rules.releases.FORUM_NAME}
+                      </option>
+                    <!-- END releases -->
+                  </select>
+                </div>
+                <div></div>
+                <div>
+                  <select name="prj_acp_move_to_array[]">
+                    <!-- BEGIN finished -->
+                      <option value="{prj_acp_move_rules.finished.FORUM_ID}"<!-- IF prj_acp_move_rules.finished.SELECTED --> selected<!-- ENDIF -->>
+                        {prj_acp_move_rules.finished.FORUM_NAME}
+                      </option>
+                    <!-- END finished -->
+                  </select>
+                </div>
+              </dd>
+            </dl>
+          </li>
+        <!-- END prj_acp_move_rules -->
+      </ul>
+    </div>
+  </fieldset>
+  <fieldset>
+    <div class="prj-acp-form">
     <div class="prj-acp-info">
       <h2>{L_PRJ_STATUSES_LIST}</h2>
-      {L_PRJ_STATUSES_INFO}
+      {L_PRJ_STATUSES_EXP}
     </div>
       <ul class="prj-acp-header">
         <li>
@@ -52,7 +106,7 @@
     <div class="prj-acp-form">
     <div class="prj-acp-info">
       <h2>{L_PRJ_RELEASE_CODES_LIST}</h2>
-      {L_PRJ_RELEASE_CODES_INFO}
+      {L_PRJ_RELEASE_CODES_EXP}
     </div>
       <ul class="prj-acp-header">
         <li>

@@ -37,6 +37,9 @@ class listener implements EventSubscriberInterface
   /* @var \phpbb\mimetype\guesser */
   private $mimetype_guesser;
 
+  /** @var \phpbb\notification\manager */
+  private $notification_manager;
+
   /* @var \phpbb\plupload\plupload */
   private $plupload;
 
@@ -76,6 +79,7 @@ class listener implements EventSubscriberInterface
     \phpbb\db\driver\driver_interface         $db,
     \phpbb\controller\helper                  $helper,
     \phpbb\mimetype\guesser                   $mimetype_guesser,
+    \phpbb\notification\manager               $notification_manager,
     \phpbb\plupload\plupload                  $plupload,
     \phpbb\request\request                    $request,
     \phpbb\template\template                  $template,
@@ -87,43 +91,83 @@ class listener implements EventSubscriberInterface
                                               $table_prefix
   )
   {
-    $this->auth                = $auth;
-    $this->config              = $config;
-    $this->db                  = $db;
-    $this->helper              = $helper;
-    $this->mimetype_guesser    = $mimetype_guesser;
-    $this->plupload            = $plupload;
-    $this->request             = $request;
-    $this->template            = $template;
-    $this->user                = $user;
-    $this->projects_helper     = $projects_helper;
-    $this->projects_controller = $projects_controller;
-    $this->root_path           = $root_path;
-    $this->phpEx               = $phpEx;
-    $this->table_prefix        = $table_prefix;
-    $this->current_project_id  = 0;
+    $this->auth                 = $auth;
+    $this->config               = $config;
+    $this->db                   = $db;
+    $this->helper               = $helper;
+    $this->mimetype_guesser     = $mimetype_guesser;
+    $this->notification_manager = $notification_manager;
+    $this->plupload             = $plupload;
+    $this->request              = $request;
+    $this->template             = $template;
+    $this->user                 = $user;
+    $this->projects_helper      = $projects_helper;
+    $this->projects_controller  = $projects_controller;
+    $this->root_path            = $root_path;
+    $this->phpEx                = $phpEx;
+    $this->table_prefix         = $table_prefix;
+    $this->current_project_id   = 0;
   }
 
   static public function getSubscribedEvents()
   {
     return array(
+      'core.permissions' => 'add_projects_permissions',
+
+      'core.user_setup' => 'add_lang_ext',
+
       'core.index_modify_page_title'               => 'display_project_tables',
       'core.viewtopic_assign_template_vars_before' => 'display_stages_header',
       'core.viewtopic_modify_post_row'             => 'display_stageup_icon',
-      'core.posting_modify_template_vars'          => array(
-                                                        array('display_projects_form'),
-                                                        array('prefill_release_form'),
-                                                        array('display_releases_form')
-                                                      ),
-      'core.posting_modify_submit_post_before'     => array(
-                                                        array('add_new_project'),
-                                                        array('modify_release_title')
-                                                      ),
-      'core.posting_modify_submit_post_after'      => array(
-                                                        array('link_new_topic_to_project'),
-                                                        array('add_new_releases')
-                                                      )
+
+      'core.posting_modify_template_vars' => array(
+                                               array('display_projects_form'),
+                                               array('prefill_release_form'),
+                                               array('display_releases_form')
+      ),
+      'core.posting_modify_submit_post_before' => array(
+                                                    array('add_new_project'),
+                                                    array('modify_release_title')
+      ),
+      'core.posting_modify_submit_post_after' => array(
+                                                   array('link_new_topic_to_project'),
+                                                   array('add_new_releases')
+      )
     );
+  }
+
+  /**
+  * Event: core.permissions.
+  *
+  * Add the permissions required for the projects extension.
+  */
+  public function add_projects_permissions($event)
+  {
+    $this->user->add_lang_ext('ttpham/projects', 'projects');
+
+    $permissions = $event['permissions'];
+    $permissions['m_prj_stageup'] = array(
+                                      'lang' => $this->user->lang['M_PRJ_STAGEUP'],
+                                      'cat' => 'topic_actions'
+    );
+    $permissions['m_prj_release_project'] = array(
+                                      'lang' => $this->user->lang['M_PRJ_RELEASE_PROJECT'],
+                                      'cat' => 'topic_actions'
+    );
+    $permissions['m_prj_finished_project'] = array(
+                                      'lang' => $this->user->lang['M_PRJ_FINISHED_PROJECT'],
+                                      'cat' => 'topic_actions'
+    );
+    $permissions['f_prj_projects'] = array(
+                                      'lang' => $this->user->lang['F_PRJ_PROJECTS'],
+                                      'cat' => 'actions'
+    );
+    $event['permissions'] = $permissions;
+  }
+
+  public function add_lang_ext()
+  {
+    $this->user->add_lang_ext('ttpham/projects', 'notification');
   }
 
   /**
@@ -175,7 +219,9 @@ class listener implements EventSubscriberInterface
     {
       $tpl_ary = array(
         'PROJECT_STAGE'         => $stage['status_name'],
-        'PROJECT_DEADLINE_DATE' => (isset($stage['project_deadline'])) ? $this->user->format_date($stage['project_deadline'], 'M d, Y') : '',
+        'PROJECT_DEADLINE_DATE' => (isset($stage['project_deadline']))
+                                   ? $this->user->format_date($stage['project_deadline'], 'M d, Y')
+                                   : '',
         'CURRENT_STAGE'         => $stage['current_stage_id'] === $stage['stage_id'],
         'LAST_STAGE'            => $i === sizeof($stages)
       );
@@ -198,61 +244,50 @@ class listener implements EventSubscriberInterface
   {
     $post_row        = $event['post_row'];
     $post_id         = $post_row['POST_ID'];
-    $is_topic_poster = $post_row['S_TOPIC_POSTER'];
+    $topic_poster    = $event['topic_data']['topic_poster'];
+    $topic_id        = $event['topic_data']['topic_id'];
 
     // Check if user has permission to view button.
-    if (!$is_topic_poster &&
+    if ($topic_poster != $this->user->data['user_id'] &&
         !$this->auth->acl_get('m_prj_stageup'))
       return;
 
-    $forum_ids = explode(',', $this->config['prj_project_forum_ids']);
-
-    // There are no project forums, so don't display the button.
-    if (sizeof($forum_ids) == 0)
+    // Check if this is the first post for topics in projects forums.
+    if ($post_id != $event['topic_data']['topic_first_post_id'] ||
+        !$this->projects_helper->in_valid_forum($topic_id))
       return;
 
-    // Check if this is the first post for topics in project forums.
-    $sql = 'SELECT topic_id
-            FROM ' . TOPICS_TABLE . '
-            WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids) . '
-              AND topic_first_post_id = ' . $post_id . '
-              AND topic_type = 0';
-
-    $result = $this->db->sql_query($sql);
-    $row    = $this->db->sql_fetchrow($result);
-    $this->db->sql_freeresult($result);
-
-    $topic_id = $row['topic_id'];
-
-    // This post isn't the first post of a project.
-    if (!$topic_id)
-      return;
 
     $next_stage = $this->projects_helper->get_next_stage($topic_id);
     $next_status = $next_stage['status_name'];
 
-    $this->user->add_lang_ext('ttpham/projects', 'projects');
+    // If the project needs to be released, but the user does not
+    // have permission to release the project, send a request instead.
+    $release_project = (sizeof($next_stage) === 0);
+    $request_release = ($release_project && !$this->auth->acl_get('m_prj_stageup'));
 
-    $release_project = ($next_stage['stage_id'] === 0) ? true : false;
+    // If already requested a release
+    if ($request_release && !$this->projects_helper->is_initial_release_request($topic_id))
+      return;
 
     // Display the button.
     $post_row['U_PRJ_STAGEUP'] = $this->helper->route(
                                    'projects_stage_up_controller',
-                                   array('topic_id' => $topic_id,
-                                         'release'  => $release_project
-    ));
+                                   array(
+                                    'topic_id'        => $topic_id,
+                                    'release_project' => $release_project,
+                                    'request_release' => $request_release
+                                   )
+    );
     $post_row['PRJ_RELEASE_PROJECT'] = $release_project;
     $post_row['PRJ_STAGE']           = $next_status;
+    $post_row['PRJ_REQUEST_RELEASE'] = $request_release;
 
-    // Only show the buttons to those with permission to release the project
-    // if it needs to be released.
-    if (!$release_project || ($release_project && $this->auth->acl_get('m_prj_release_project')))
-    {
-      $this->template->assign_vars(array(
-        'PRJ_SHOW_STAGE_FORWARD_BUTTON' => true
-      ));
-      $event['post_row'] = $post_row;
-    }
+    $this->user->add_lang_ext('ttpham/projects', 'projects');
+    $this->template->assign_vars(array(
+      'PRJ_SHOW_STAGE_FORWARD_BUTTON' => true
+    ));
+    $event['post_row'] = $post_row;
   }
 
   /**
@@ -305,8 +340,12 @@ class listener implements EventSubscriberInterface
     {
       $tpl_ary = array(
         'PROJECT_STAGE' => $row['status_name'],
-        'PROJECT_DEADLINE_DATE' => (isset($row['project_deadline'])) ? $this->user->format_date($row['project_deadline'], 'M d, Y') : '',
-        'PROJECT_DEADLINE_UNIX' => (isset($row['project_deadline'])) ? $row['project_deadline'] * 1000 : '',
+        'PROJECT_DEADLINE_DATE' => (isset($row['project_deadline']))
+                                   ? $this->user->format_date($row['project_deadline'], 'M d, Y')
+                                   : '',
+        'PROJECT_DEADLINE_UNIX' => (isset($row['project_deadline']))
+                                   ? $row['project_deadline'] * 1000
+                                   : '',
       );
 
       $this->template->assign_block_vars($tpl_loopname, $tpl_ary);
@@ -327,42 +366,43 @@ class listener implements EventSubscriberInterface
   */
   public function prefill_release_form($event)
   {
-    $topic_id = $this->request->variable('prj_topic_id', 0);
+    $prj_topic_id = (int) $this->request->variable('prj_topic_id', 0);
 
-    if ($event['mode'] != 'post' || $topic_id === 0)
+    // Only prefill the form if posting the release.
+    if ($event['mode'] != 'post' || $prj_topic_id === 0)
       return;
 
-    // Can the user releases this project?
-    if (!$this->auth->acl_get('m_prj_release_project'))
+    // Can the user release the project into this forum?
+    if (!$this->auth->acl_get('m_prj_release_project', $event['forum_id']))
       return;
 
     // Can the user view this topic?
-    $sql = 'SELECT forum_id, topic_visibility
+    $sql = 'SELECT forum_id
             FROM ' . TOPICS_TABLE . '
-            WHERE topic_id = ' . $topic_id;
-    $result = $this->db->sql_query($sql);
-    $row    = $this->db->sql_fetchrow($result);
+            WHERE topic_id = ' . $prj_topic_id . '
+              AND topic_visibility = 1';
+    $result       = $this->db->sql_query_limit($sql, 1);
+    $prj_forum_id = $this->db->sql_fetchfield('forum_id');
     $this->db->sql_freeresult($result);
 
-    if (!$row ||
-        !$this->auth->acl_get('f_read', $row['forum_id']) ||
-        $row['topic_visibility' !== '1'])
+    if (!isset($prj_forum_id) || !$this->auth->acl_get('f_read', $prj_forum_id))
       return;
 
     // Grab project title and project first post.
     $rowset = $this->projects_helper->get_project_data(
-                                        array('topic_id' => $topic_id),
+                                        array('topic_id' => $prj_topic_id),
                                         array('SELECT'   => array('project_title'))
     );
     if (!$rowset)
       return;
 
-    $sql = 'SELECT post_text, bbcode_uid, bbcode_bitfield
+    // Grab post data to prefill the form.
+    $sql = 'SELECT post_text, bbcode_uid
             FROM ' . POSTS_TABLE . '
             WHERE post_id = (SELECT topic_first_post_id
                              FROM ' . TOPICS_TABLE . '
-                             WHERE topic_id = ' . $topic_id . ')';
-    $result = $this->db->sql_query($sql);
+                             WHERE topic_id = ' . $prj_topic_id . ')';
+    $result = $this->db->sql_query_limit($sql, 1);
     $row    = $this->db->sql_fetchrow($result);
     $this->db->sql_freeresult($result);
 
@@ -385,7 +425,7 @@ class listener implements EventSubscriberInterface
       $page_data['SUBJECT'] = $project_title;
     if ($page_data['MESSAGE'] === '')
       $page_data['MESSAGE'] = censor_text($project_message);
-    $page_data['S_POST_ACTION'] = $page_data['S_POST_ACTION'] . "&amp;prj_topic_id=$topic_id";
+    $page_data['S_POST_ACTION'] = $page_data['S_POST_ACTION'] . "&amp;prj_topic_id=$prj_topic_id";
 
     $event['page_data'] = $page_data;
   }
@@ -406,7 +446,7 @@ class listener implements EventSubscriberInterface
     $release_codes = $this->projects_helper->get_release_codes();
 
     if ($event['preview'])
-      $release_code_selected = $this->request->variable('prj_release_code', 0);
+      $release_code_selected = (int) $this->request->variable('prj_release_code', 0);
 
     $i = 0;
     foreach ($release_codes as $release_code)
@@ -417,7 +457,9 @@ class listener implements EventSubscriberInterface
       $tpl_ary = array(
         'CODE_ID'    => $release_code_id,
         'CODE_TEXT'  => $release_code_text,
-        'SELECTED'   => (isset($release_code_selected)) ? ($release_code_selected === (int) $release_code_id) : ($i === 0)
+        'SELECTED'   => (isset($release_code_selected))
+                        ? ($release_code_selected === (int) $release_code_id)
+                        : ($i === 0)
       );
       $this->template->assign_block_vars($tpl_loopname, $tpl_ary);
       ++$i;
@@ -427,7 +469,9 @@ class listener implements EventSubscriberInterface
     $tpl_default = array(
       'CODE_ID' => 0,
       'CODE_TEXT' => '',
-      'SELECTED' => (isset($release_code_selected)) ? $release_code_selected === 0 : false
+      'SELECTED' => (isset($release_code_selected))
+                      ? $release_code_selected === 0
+                      : false
     );
     $this->template->assign_block_vars($tpl_loopname, $tpl_default);
 
@@ -478,8 +522,8 @@ class listener implements EventSubscriberInterface
     $deadlines   = $this->request->variable('prj_dates', array(''));
     for ($i = 0; $i < sizeof($stage_names); ++$i)
     {
-      if ($deadlines[$i] === '' || $stage_names[$i] === '')
-        break;
+      if ($deadlines[$i] === '' || $stage_names[$i] === '' || strlen($stage_names[$i]) > 25)
+        continue;
       $status_name = $stage_names[$i];
       $project_deadline = $deadlines[$i] / 1000;
 
@@ -523,8 +567,8 @@ class listener implements EventSubscriberInterface
       return;
 
     // Get release code of project.
-    $release_code_id = $this->request->variable('prj_release_code', 0);
-    $release_code = $this->projects_helper->get_release_code($release_code_id);
+    $release_code_id   = (int) $this->request->variable('prj_release_code', 0);
+    $release_code      = $this->projects_helper->get_release_code($release_code_id);
     $release_code_text = '';
     if ($release_code)
     {
@@ -585,7 +629,7 @@ class listener implements EventSubscriberInterface
 
     // Since the release post was successful, we will increment the
     // index of the release code used.
-    $release_code_id = $this->request->variable('prj_release_code', 0);
+    $release_code_id = (int) $this->request->variable('prj_release_code', 0);
     $this->projects_helper->increment_index($release_code_id);
     $this->projects_helper->add_new_releases($topic_id);
 
@@ -594,12 +638,18 @@ class listener implements EventSubscriberInterface
     */
 
     // Grab relevant config variables.
-    $move_after_release = (isset($this->config['prj_move_after_release'])) ? $this->config['prj_move_after_release'] : false;
-    $move_lock_topics   = (isset($this->config['prj_move_lock_topics'])) ? $this->config['prj_move_lock_topics'] : false;
+    $move_after_release = (isset($this->config['prj_move_after_release']))
+                          ? (bool) $this->config['prj_move_after_release']
+                          : false;
+    $move_lock_topics   = (isset($this->config['prj_move_lock_topics']))
+                          ? (bool) $this->config['prj_move_lock_topics']
+                          : false;
     if (!$move_after_release)
       return;
 
-    $prj_topic_id = $this->request->variable('prj_topic_id', 0);
+    // Unset the release request.
+    $prj_topic_id = (int) $this->request->variable('prj_topic_id', 0);
+    $this->projects_helper->unset_release_request($prj_topic_id);
 
     // Grab forum_id of the project.
     $sql = 'SELECT forum_id
@@ -642,13 +692,18 @@ class listener implements EventSubscriberInterface
     $this->request->overwrite('sess', $this->user->data['session_id']);
     $this->request->overwrite('redirect', $redirect);
 
-    // Include functions used my mcp_move_topic.
+    // Include functions used by mcp_move_topic.
     if (!function_exists('mcp_move_topic'))
       include($this->root_path . 'includes/mcp/mcp_main.' . $this->phpEx);
     if (!function_exists('phpbb_check_ids'))
       include($this->root_path . 'includes/functions_mcp.' . $this->phpEx);
     if (!function_exists('make_forum_select'))
       include($this->root_path . 'includes/functions_admin.' . $this->phpEx);
+
+    // Delete notifications about this project.
+    $this->notification_manager->delete_notifications('ttpham.projects.notification.type.release_request', $prj_topic_id, $prj_forum_id);
+
+    // Finally... move the topic.
     mcp_move_topic(array($prj_topic_id));
   }
 }
